@@ -33,7 +33,7 @@ export const SOURCES: Source[] = [
   { name: "Latent Space", url: "https://www.latent.space/feed", tier: "learning", weight: 4 },
   { name: "Lilian Weng", url: "https://lilianweng.github.io/index.xml", tier: "learning", weight: 4 },
   { name: "Hugging Face blog", url: "https://huggingface.co/blog/feed.xml", tier: "learning", weight: 3 },
-  { name: "Anthropic engineering", url: "https://www.anthropic.com/engineering/rss.xml", tier: "learning", weight: 4 },
+  { name: "OpenAI News", url: "https://openai.com/news/rss.xml", tier: "learning", weight: 4 },
   { name: "Google Research blog", url: "https://research.google/blog/rss/", tier: "learning", weight: 3 },
 
   // ── awareness ──────────────────────────────────────────────────────────

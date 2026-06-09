@@ -1,0 +1,68 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { blendRank, capForBudget, parseScores, preScorePriority, rankAndSort } from "./score.js";
+import type { FeedItem } from "./types.js";
+
+function item(p: Partial<FeedItem>): FeedItem {
+  return {
+    id: p.id ?? "1", title: p.title ?? "t", link: p.link ?? "https://x/1",
+    source: p.source ?? "s", tier: p.tier ?? "tools", weight: p.weight ?? 1,
+    publishedAt: p.publishedAt ?? 0,
+  };
+}
+
+test("parseScores accepts a clean JSON array", () => {
+  const raw = '[{"relevance":7,"summary":"hi","category":"engineering"}]';
+  const out = parseScores(raw, 1);
+  assert.equal(out[0]?.relevance, 7);
+  assert.equal(out[0]?.category, "engineering");
+});
+
+test("parseScores strips ```json fences before parsing", () => {
+  const raw = '```json\n[{"relevance":3,"summary":"s","category":"ecosystem"}]\n```';
+  assert.equal(parseScores(raw, 1).length, 1);
+});
+
+test("parseScores throws when the count does not match", () => {
+  const raw = '[{"relevance":7,"summary":"hi","category":"engineering"}]';
+  assert.throws(() => parseScores(raw, 2));
+});
+
+test("parseScores clamps relevance and falls back on bad category", () => {
+  const raw = '[{"relevance":99,"summary":"s","category":"not-real"}]';
+  const out = parseScores(raw, 1);
+  assert.equal(out[0]?.relevance, 10);
+  assert.equal(out[0]?.category, "ecosystem"); // safe fallback
+});
+
+test("blendRank = relevance + tier priority + weight*0.5", () => {
+  assert.equal(blendRank(7, "tools", 4), 7 + 2 + 2);       // 11
+  assert.equal(blendRank(7, "awareness", 1), 7 + 0 + 0.5); // 7.5
+});
+
+test("preScorePriority ranks tools+high-weight above awareness+low-weight", () => {
+  assert.ok(preScorePriority("tools", 5) > preScorePriority("awareness", 1));
+});
+
+test("capForBudget keeps the highest pre-score priority items up to the limit", () => {
+  const items = [
+    item({ id: "lo", tier: "awareness", weight: 1 }),
+    item({ id: "hi", tier: "tools", weight: 5 }),
+    item({ id: "mid", tier: "learning", weight: 3 }),
+  ];
+  assert.deepEqual(capForBudget(items, 2).map((i) => i.id), ["hi", "mid"]);
+});
+
+test("capForBudget is a no-op at or under the limit", () => {
+  assert.equal(capForBudget([item({ id: "a" })], 10).length, 1);
+});
+
+test("rankAndSort sorts by blended rank descending", () => {
+  const items = [item({ id: "a", tier: "awareness", weight: 1 }), item({ id: "b", tier: "tools", weight: 5 })];
+  const scores = [
+    { relevance: 8, summary: "a", category: "ecosystem" as const },
+    { relevance: 8, summary: "b", category: "agents-tooling" as const },
+  ];
+  const out = rankAndSort(items, scores);
+  assert.equal(out[0]?.id, "b"); // tools+weight5 outranks awareness+weight1 at equal relevance
+});

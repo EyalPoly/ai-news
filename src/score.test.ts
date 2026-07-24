@@ -8,6 +8,7 @@ import {
   preScorePriority,
   rankAndSort,
   RetryableError,
+  scoreBatchOpenAICompatible,
   withRetry,
 } from "./score.js";
 import type { FeedItem } from "./types.js";
@@ -133,4 +134,85 @@ test("withRetry gives up after `attempts` and throws the last error", async () =
     /fail 3/,
   );
   assert.equal(calls, 3);
+});
+
+test("scoreBatchOpenAICompatible posts to {endpoint}/chat/completions and parses the response", async (t) => {
+  const items = [item({ id: "a", title: "Title A" })];
+  const calls: { url: string; init: RequestInit }[] = [];
+  t.mock.method(globalThis, "fetch", async (url: string, init: RequestInit) => {
+    calls.push({ url, init });
+    return new Response(
+      JSON.stringify({
+        choices: [{ message: { content: '{"scores":[{"relevance":6,"category":"engineering"}]}' } }],
+        usage: { prompt_tokens: 10, completion_tokens: 5 },
+      }),
+      { status: 200 },
+    );
+  });
+
+  const result = await scoreBatchOpenAICompatible(items, {
+    endpoint: "https://x/v1",
+    apiKey: "test-key",
+    model: "test-model",
+  });
+
+  assert.equal(result.scores[0]?.relevance, 6);
+  assert.equal(result.inputTokens, 10);
+  assert.equal(result.outputTokens, 5);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0]?.url, "https://x/v1/chat/completions");
+  const body = JSON.parse(String(calls[0]?.init.body));
+  assert.equal(body.model, "test-model");
+  assert.equal(body.response_format.type, "json_object");
+  const headers = calls[0]?.init.headers as Record<string, string>;
+  assert.equal(headers.authorization, "Bearer test-key");
+});
+
+test("scoreBatchOpenAICompatible omits the auth header when no apiKey is set", async (t) => {
+  const items = [item({ id: "a" })];
+  const calls: { init: RequestInit }[] = [];
+  t.mock.method(globalThis, "fetch", async (_url: string, init: RequestInit) => {
+    calls.push({ init });
+    return new Response(
+      JSON.stringify({ choices: [{ message: { content: '{"scores":[{"relevance":1,"category":"ecosystem"}]}' } }] }),
+      { status: 200 },
+    );
+  });
+
+  await scoreBatchOpenAICompatible(items, { endpoint: "https://x/v1", apiKey: "", model: "m" });
+
+  const headers = calls[0]?.init.headers as Record<string, string>;
+  assert.equal(headers.authorization, undefined);
+});
+
+test("scoreBatchOpenAICompatible throws RetryableError on a 429 response", async (t) => {
+  const items = [item({ id: "a" })];
+  t.mock.method(globalThis, "fetch", async () => new Response("rate limited", { status: 429 }));
+
+  await assert.rejects(
+    scoreBatchOpenAICompatible(items, { endpoint: "https://x/v1", apiKey: "", model: "m" }),
+    RetryableError,
+  );
+});
+
+test("scoreBatchOpenAICompatible throws a plain Error on a 400 response", async (t) => {
+  const items = [item({ id: "a" })];
+  t.mock.method(globalThis, "fetch", async () => new Response("bad request", { status: 400 }));
+
+  await assert.rejects(
+    scoreBatchOpenAICompatible(items, { endpoint: "https://x/v1", apiKey: "", model: "m" }),
+    (err: unknown) => err instanceof Error && !(err instanceof RetryableError),
+  );
+});
+
+test("scoreBatchOpenAICompatible defaults token counts to 0 when usage is missing", async (t) => {
+  const items = [item({ id: "a" })];
+  t.mock.method(globalThis, "fetch", async () => new Response(
+    JSON.stringify({ choices: [{ message: { content: '{"scores":[{"relevance":1,"category":"ecosystem"}]}' } }] }),
+    { status: 200 },
+  ));
+
+  const result = await scoreBatchOpenAICompatible(items, { endpoint: "https://x/v1", apiKey: "", model: "m" });
+  assert.equal(result.inputTokens, 0);
+  assert.equal(result.outputTokens, 0);
 });

@@ -1,11 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
 import {
   CATEGORIES,
+  LLM_API_KEY,
+  LLM_ENDPOINT,
+  LLM_MODEL,
   MAX_ITEMS_PER_RUN,
   PRICE_PER_INPUT_TOKEN,
   PRICE_PER_OUTPUT_TOKEN,
   SCORE_BATCH_SIZE,
   SCORING_MODEL,
+  SCORING_PROVIDER,
   TIER_PRIORITY,
 } from "./config.js";
 import type { Category, FeedItem, Score, ScoredItem, Tier } from "./types.js";
@@ -114,13 +118,25 @@ interface BatchResult {
   outputTokens: number;
 }
 
-async function scoreBatch(client: Anthropic, batch: FeedItem[]): Promise<BatchResult> {
-  const response = await client.messages.create({
-    model: SCORING_MODEL,
-    max_tokens: 4096,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: buildUserPrompt(batch) }],
-  });
+/** True if `err` carries an HTTP-style `status` that's worth retrying. Duck-typed since the SDK's error shape isn't a hard contract to depend on. */
+function isRetryableAnthropicError(err: unknown): boolean {
+  const status = (err as { status?: unknown } | null)?.status;
+  return typeof status === "number" && isRetryableStatus(status);
+}
+
+async function scoreBatchAnthropic(client: Anthropic, batch: FeedItem[]): Promise<BatchResult> {
+  let response;
+  try {
+    response = await client.messages.create({
+      model: SCORING_MODEL,
+      max_tokens: 4096,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: buildUserPrompt(batch) }],
+    });
+  } catch (err) {
+    if (isRetryableAnthropicError(err)) throw new RetryableError(String(err));
+    throw err;
+  }
   const text = response.content
     .filter((b): b is Anthropic.TextBlock => b.type === "text")
     .map((b) => b.text)
@@ -132,32 +148,90 @@ async function scoreBatch(client: Anthropic, batch: FeedItem[]): Promise<BatchRe
   };
 }
 
+interface OpenAICompatibleOpts {
+  endpoint: string;
+  apiKey: string;
+  model: string;
+}
+
+export async function scoreBatchOpenAICompatible(
+  batch: FeedItem[],
+  opts: OpenAICompatibleOpts,
+): Promise<BatchResult> {
+  const headers: Record<string, string> = { "content-type": "application/json" };
+  if (opts.apiKey) headers.authorization = `Bearer ${opts.apiKey}`;
+
+  const response = await fetch(`${opts.endpoint}/chat/completions`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: opts.model,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: buildUserPrompt(batch) },
+      ],
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  if (!response.ok) {
+    const message = `openai-compatible scoring request failed: ${response.status} ${response.statusText}`;
+    if (isRetryableStatus(response.status)) throw new RetryableError(message);
+    throw new Error(message);
+  }
+
+  const data = (await response.json()) as {
+    choices?: { message?: { content?: string } }[];
+    usage?: { prompt_tokens?: number; completion_tokens?: number };
+  };
+  const text = data.choices?.[0]?.message?.content ?? "";
+  return {
+    scores: parseScores(text, batch.length),
+    inputTokens: data.usage?.prompt_tokens ?? 0,
+    outputTokens: data.usage?.completion_tokens ?? 0,
+  };
+}
+
 function chunk<T>(arr: T[], size: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
   return out;
 }
 
-/** Score every item (capped + batched), return ranked descending. Requires ANTHROPIC_API_KEY. */
+/** Score every item (capped + batched), return ranked descending. Provider chosen by SCORING_PROVIDER. */
 export async function scoreItems(items: FeedItem[]): Promise<ScoredItem[]> {
   const capped = capForBudget(items);
   if (capped.length === 0) return [];
-  const client = new Anthropic();
   const batches = chunk(capped, SCORE_BATCH_SIZE);
+
+  const callBatch: (batch: FeedItem[]) => Promise<BatchResult> =
+    SCORING_PROVIDER === "openai-compatible"
+      ? (batch) =>
+          withRetry(() =>
+            scoreBatchOpenAICompatible(batch, { endpoint: LLM_ENDPOINT, apiKey: LLM_API_KEY, model: LLM_MODEL }),
+          )
+      : (() => {
+          const client = new Anthropic();
+          return (batch) => withRetry(() => scoreBatchAnthropic(client, batch));
+        })();
 
   let inputTokens = 0;
   let outputTokens = 0;
   const scoredBatches = await Promise.all(
     batches.map(async (batch) => {
-      const result = await scoreBatch(client, batch);
+      const result = await callBatch(batch);
       inputTokens += result.inputTokens;
       outputTokens += result.outputTokens;
       return rankAndSort(batch, result.scores);
     }),
   );
 
-  const cost = inputTokens * PRICE_PER_INPUT_TOKEN + outputTokens * PRICE_PER_OUTPUT_TOKEN;
-  console.log(`[score] ${capped.length} items · ${inputTokens} in / ${outputTokens} out tokens · ~$${cost.toFixed(4)}`);
+  if (SCORING_PROVIDER === "anthropic") {
+    const cost = inputTokens * PRICE_PER_INPUT_TOKEN + outputTokens * PRICE_PER_OUTPUT_TOKEN;
+    console.log(`[score] ${capped.length} items · ${inputTokens} in / ${outputTokens} out tokens · ~$${cost.toFixed(4)}`);
+  } else {
+    console.log(`[score] ${capped.length} items · ${inputTokens} in / ${outputTokens} out tokens (provider=openai-compatible)`);
+  }
 
   return scoredBatches.flat().sort((a, b) => b.rank - a.rank);
 }

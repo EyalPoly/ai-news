@@ -20,7 +20,7 @@ One-directional pipeline, one module per stage in `src/`:
 - ESM with `.js` import specifiers for local `.ts` files.
 - Strict TS with `noUncheckedIndexedAccess`; run `npm run typecheck` after changes.
 - Comments explain *why*, not *what*.
-- Scoring uses `claude-haiku-4-5` (cheap/fast batch classification). Update the id in `config.ts` if migrating models.
+- Scoring provider is configurable via `SCORING_PROVIDER` in `config.ts`/env: `anthropic` (default, `claude-haiku-4-5`) or `openai-compatible` (any OpenAI-style `/chat/completions` endpoint — Gemini free tier, self-hosted, etc.). Update `SCORING_MODEL` or `LLM_MODEL` in `config.ts` if migrating models.
 - Don't assert a feed URL works from memory — verify it parses (run the digest, or check `discovery`).
 - Tests are flat `src/*.test.ts` files run by `node:test`; the `npm test` glob is single-level (`src/*.test.ts`) so it works on Node 20 and 22 alike.
 

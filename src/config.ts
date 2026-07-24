@@ -16,6 +16,23 @@ export const SCORING_MODEL = "claude-haiku-4-5";
 export const SCORE_BATCH_SIZE = 25;
 
 /**
+ * Which scoring backend to use. "anthropic" (default) calls the Claude API;
+ * "openai-compatible" POSTs to LLM_ENDPOINT using the OpenAI chat-completions
+ * shape (works for Gemini's free tier, a self-hosted Ollama/vLLM server, etc.).
+ */
+export const SCORING_PROVIDER: "anthropic" | "openai-compatible" =
+  process.env.SCORING_PROVIDER === "openai-compatible" ? "openai-compatible" : "anthropic";
+
+/** Base URL for the openai-compatible provider, e.g. a Gemini or self-hosted endpoint. */
+export const LLM_ENDPOINT = process.env.LLM_ENDPOINT ?? "";
+
+/** Bearer token for the openai-compatible provider. Optional — some self-hosted servers need none. */
+export const LLM_API_KEY = process.env.LLM_API_KEY ?? "";
+
+/** Model name sent in the request body to the openai-compatible provider. */
+export const LLM_MODEL = process.env.LLM_MODEL ?? "";
+
+/**
  * Hard ceiling on items scored per run — bounds worst-case API cost in code.
  * Lowest pre-score-priority items (low tier + low weight) are dropped first.
  * At 150 items a run costs well under $0.05; combined with the Console monthly

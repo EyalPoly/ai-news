@@ -3,7 +3,7 @@ import type { Category, ScoredItem } from "./types.js";
 
 function renderItem(item: ScoredItem): string {
   const footnote = `*${item.source} · relevance ${item.relevance}/10*`;
-  return `- [${item.title}](${item.link}) — ${item.summary}\n  ${footnote}`;
+  return `- [${item.title}](${item.link})\n  ${footnote}`;
 }
 
 /** Markdown digest grouped by category, threshold-filtered, dated. */

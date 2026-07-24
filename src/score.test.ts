@@ -1,6 +1,15 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { blendRank, capForBudget, parseScores, preScorePriority, rankAndSort } from "./score.js";
+import {
+  blendRank,
+  capForBudget,
+  isRetryableStatus,
+  parseScores,
+  preScorePriority,
+  rankAndSort,
+  RetryableError,
+  withRetry,
+} from "./score.js";
 import type { FeedItem } from "./types.js";
 
 function item(p: Partial<FeedItem>): FeedItem {
@@ -70,4 +79,58 @@ test("rankAndSort sorts by blended rank descending", () => {
   ];
   const out = rankAndSort(items, scores);
   assert.equal(out[0]?.id, "b"); // tools+weight5 outranks awareness+weight1 at equal relevance
+});
+
+test("isRetryableStatus is true for 429 and 5xx, false otherwise", () => {
+  assert.equal(isRetryableStatus(429), true);
+  assert.equal(isRetryableStatus(500), true);
+  assert.equal(isRetryableStatus(503), true);
+  assert.equal(isRetryableStatus(400), false);
+  assert.equal(isRetryableStatus(404), false);
+  assert.equal(isRetryableStatus(200), false);
+});
+
+test("withRetry returns the result on first success without retrying", async () => {
+  let calls = 0;
+  const result = await withRetry(async () => {
+    calls += 1;
+    return "ok";
+  });
+  assert.equal(result, "ok");
+  assert.equal(calls, 1);
+});
+
+test("withRetry retries RetryableError up to `attempts` times then succeeds", async () => {
+  let calls = 0;
+  const result = await withRetry(async () => {
+    calls += 1;
+    if (calls < 3) throw new RetryableError("transient");
+    return "ok";
+  }, 3, 1);
+  assert.equal(result, "ok");
+  assert.equal(calls, 3);
+});
+
+test("withRetry does not retry a non-RetryableError", async () => {
+  let calls = 0;
+  await assert.rejects(
+    withRetry(async () => {
+      calls += 1;
+      throw new Error("permanent");
+    }, 3, 1),
+    /permanent/,
+  );
+  assert.equal(calls, 1);
+});
+
+test("withRetry gives up after `attempts` and throws the last error", async () => {
+  let calls = 0;
+  await assert.rejects(
+    withRetry(async () => {
+      calls += 1;
+      throw new RetryableError(`fail ${calls}`);
+    }, 3, 1),
+    /fail 3/,
+  );
+  assert.equal(calls, 3);
 });

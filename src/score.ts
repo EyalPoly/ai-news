@@ -18,11 +18,10 @@ const SYSTEM_PROMPT = [
   "",
   "For each input item return an object with:",
   '  - "relevance": integer 0–10 (10 = essential to a hands-on builder this week)',
-  '  - "summary": one factual sentence, no marketing tone',
   `  - "category": one of ${CATEGORIES.join(", ")}`,
   "",
-  "Respond with ONLY a JSON array, one object per input item, in the SAME ORDER.",
-  "No prose, no markdown, no code fences.",
+  'Respond with ONLY a JSON object of the form {"scores": [...]}, one entry per',
+  "input item, in the SAME ORDER. No prose, no markdown, no code fences.",
 ].join("\n");
 
 function clampRelevance(value: unknown): number {
@@ -35,19 +34,19 @@ function safeCategory(value: unknown): Category {
   return CATEGORIES.includes(value as Category) ? (value as Category) : "ecosystem";
 }
 
-/** Defensively parse Claude's array; throws if the count != expected. */
+/** Defensively parse the model's {"scores": [...]} response; throws if the count != expected. */
 export function parseScores(raw: string, expected: number): Score[] {
   const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
   const parsed: unknown = JSON.parse(cleaned);
-  if (!Array.isArray(parsed)) throw new Error("scoring response was not a JSON array");
-  if (parsed.length !== expected) {
-    throw new Error(`scoring count mismatch: got ${parsed.length}, expected ${expected}`);
+  const scores = (parsed as { scores?: unknown } | null)?.scores;
+  if (!Array.isArray(scores)) throw new Error("scoring response did not contain a scores array");
+  if (scores.length !== expected) {
+    throw new Error(`scoring count mismatch: got ${scores.length}, expected ${expected}`);
   }
-  return parsed.map((entry): Score => {
+  return scores.map((entry): Score => {
     const obj = (entry ?? {}) as Record<string, unknown>;
     return {
       relevance: clampRelevance(obj.relevance),
-      summary: typeof obj.summary === "string" ? obj.summary : "",
       category: safeCategory(obj.category),
     };
   });
@@ -75,7 +74,7 @@ export function capForBudget(items: FeedItem[], limit = MAX_ITEMS_PER_RUN): Feed
 /** Zip items with their scores, compute rank, sort descending. */
 export function rankAndSort(items: FeedItem[], scores: Score[]): ScoredItem[] {
   const scored: ScoredItem[] = items.map((item, i) => {
-    const s = scores[i] ?? { relevance: 0, summary: "", category: "ecosystem" as Category };
+    const s = scores[i] ?? { relevance: 0, category: "ecosystem" as Category };
     return { ...item, ...s, rank: blendRank(s.relevance, item.tier, item.weight) };
   });
   return scored.sort((a, b) => b.rank - a.rank);

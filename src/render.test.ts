@@ -8,7 +8,7 @@ function scored(p: Partial<ScoredItem>): ScoredItem {
     id: p.id ?? "1", title: p.title ?? "Title", link: p.link ?? "https://x/1",
     source: p.source ?? "Src", tier: p.tier ?? "tools", weight: p.weight ?? 1,
     publishedAt: p.publishedAt ?? 0, relevance: p.relevance ?? 8,
-    summary: p.summary ?? "A summary.", category: p.category ?? "engineering",
+    category: p.category ?? "engineering",
     rank: p.rank ?? 8,
   };
 }

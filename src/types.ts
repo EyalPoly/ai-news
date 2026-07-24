@@ -29,10 +29,9 @@ export type Category =
   | "engineering"
   | "ecosystem";
 
-/** Claude's judgment for a single item. */
+/** The scoring model's judgment for a single item. */
 export interface Score {
   relevance: number; // 0–10
-  summary: string; // one sentence
   category: Category;
 }
 

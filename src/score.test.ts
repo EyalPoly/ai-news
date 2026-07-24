@@ -11,25 +11,30 @@ function item(p: Partial<FeedItem>): FeedItem {
   };
 }
 
-test("parseScores accepts a clean JSON array", () => {
-  const raw = '[{"relevance":7,"summary":"hi","category":"engineering"}]';
+test("parseScores accepts a {scores:[...]} object", () => {
+  const raw = '{"scores":[{"relevance":7,"category":"engineering"}]}';
   const out = parseScores(raw, 1);
   assert.equal(out[0]?.relevance, 7);
   assert.equal(out[0]?.category, "engineering");
 });
 
 test("parseScores strips ```json fences before parsing", () => {
-  const raw = '```json\n[{"relevance":3,"summary":"s","category":"ecosystem"}]\n```';
+  const raw = '```json\n{"scores":[{"relevance":3,"category":"ecosystem"}]}\n```';
   assert.equal(parseScores(raw, 1).length, 1);
 });
 
+test("parseScores throws when there is no scores array", () => {
+  const raw = '{"relevance":7,"category":"engineering"}';
+  assert.throws(() => parseScores(raw, 1));
+});
+
 test("parseScores throws when the count does not match", () => {
-  const raw = '[{"relevance":7,"summary":"hi","category":"engineering"}]';
+  const raw = '{"scores":[{"relevance":7,"category":"engineering"}]}';
   assert.throws(() => parseScores(raw, 2));
 });
 
 test("parseScores clamps relevance and falls back on bad category", () => {
-  const raw = '[{"relevance":99,"summary":"s","category":"not-real"}]';
+  const raw = '{"scores":[{"relevance":99,"category":"not-real"}]}';
   const out = parseScores(raw, 1);
   assert.equal(out[0]?.relevance, 10);
   assert.equal(out[0]?.category, "ecosystem"); // safe fallback
@@ -60,8 +65,8 @@ test("capForBudget is a no-op at or under the limit", () => {
 test("rankAndSort sorts by blended rank descending", () => {
   const items = [item({ id: "a", tier: "awareness", weight: 1 }), item({ id: "b", tier: "tools", weight: 5 })];
   const scores = [
-    { relevance: 8, summary: "a", category: "ecosystem" as const },
-    { relevance: 8, summary: "b", category: "agents-tooling" as const },
+    { relevance: 8, category: "ecosystem" as const },
+    { relevance: 8, category: "agents-tooling" as const },
   ];
   const out = rankAndSort(items, scores);
   assert.equal(out[0]?.id, "b"); // tools+weight5 outranks awareness+weight1 at equal relevance

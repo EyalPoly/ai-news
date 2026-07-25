@@ -54,13 +54,17 @@ If the Gmail vars are unset, email is skipped and logged — local runs work wit
 
 Set `SCORING_PROVIDER=openai-compatible` to score with anything that exposes an
 OpenAI-style `/chat/completions` endpoint instead of Claude — for example
-Gemini's free tier:
+Gemini's free tier. `gemini-3.5-flash-lite` is a good fit: Flash-Lite is the
+only Gemini tier that's free of charge across all usage tiers (Flash and Pro
+are free only in the Standard tier), and it's plenty for a title-only
+relevance/category classification task at this project's volume (~6 batched
+requests/week):
 
 ```bash
 SCORING_PROVIDER=openai-compatible
 LLM_ENDPOINT=https://generativelanguage.googleapis.com/v1beta/openai
 LLM_API_KEY=<your Gemini API key>
-LLM_MODEL=<your chosen Gemini model>
+LLM_MODEL=gemini-3.5-flash-lite
 ```
 
 or a self-hosted server (Ollama, vLLM, etc.) reachable over the network:

@@ -1,10 +1,5 @@
 import type { Source } from "./types.js";
 
-/** GitHub publishes a per-repo Atom feed of releases at this path. */
-export function githubReleases(org: string, repo: string): string {
-  return `https://github.com/${org}/${repo}/releases.atom`;
-}
-
 /**
  * Tiered feed list. Priority order: tools > learning > awareness.
  *
@@ -16,18 +11,6 @@ export function githubReleases(org: string, repo: string): string {
  * Add a source by appending an object here; run `npm run discovery` to find candidates.
  */
 export const SOURCES: Source[] = [
-  // ── tools ──────────────────────────────────────────────────────────────
-  { name: "LangGraph releases", url: githubReleases("langchain-ai", "langgraph"), tier: "tools", weight: 5 },
-  { name: "LangChain releases", url: githubReleases("langchain-ai", "langchain"), tier: "tools", weight: 4 },
-  { name: "LlamaIndex releases", url: githubReleases("run-llama", "llama_index"), tier: "tools", weight: 4 },
-  { name: "Anthropic SDK (Python) releases", url: githubReleases("anthropics", "anthropic-sdk-python"), tier: "tools", weight: 4 },
-  { name: "OpenAI SDK (Python) releases", url: githubReleases("openai", "openai-python"), tier: "tools", weight: 3 },
-  { name: "Vercel AI SDK releases", url: githubReleases("vercel", "ai"), tier: "tools", weight: 4 },
-  { name: "LiteLLM releases", url: githubReleases("BerriAI", "litellm"), tier: "tools", weight: 3 },
-  { name: "MCP servers releases", url: githubReleases("modelcontextprotocol", "servers"), tier: "tools", weight: 4 },
-  { name: "CrewAI releases", url: githubReleases("crewAIInc", "crewAI"), tier: "tools", weight: 3 },
-  { name: "Pydantic AI releases", url: githubReleases("pydantic", "pydantic-ai"), tier: "tools", weight: 4 },
-
   // ── learning ───────────────────────────────────────────────────────────
   { name: "Simon Willison", url: "https://simonwillison.net/atom/everything/", tier: "learning", weight: 5 },
   { name: "Latent Space", url: "https://www.latent.space/feed", tier: "learning", weight: 4 },

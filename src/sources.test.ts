@@ -1,13 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { githubReleases, SOURCES } from "./sources.js";
-
-test("githubReleases builds the .releases.atom URL", () => {
-  assert.equal(
-    githubReleases("langchain-ai", "langgraph"),
-    "https://github.com/langchain-ai/langgraph/releases.atom",
-  );
-});
+import { SOURCES } from "./sources.js";
 
 test("every source has a name, url, valid tier, and numeric weight", () => {
   const tiers = new Set(["tools", "learning", "awareness"]);

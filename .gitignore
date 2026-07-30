@@ -2,3 +2,10 @@ node_modules/
 .env
 *.log
 .DS_Store
+
+# Local-only planning docs — kept out of the public repo.
+docs/superpowers/
+
+# Editor / tooling state.
+.idea/
+.serena/

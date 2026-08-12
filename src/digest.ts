@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { digestPath, writeDigest } from "./digest-store.js";
 import { fetchAll } from "./fetch.js";
 import { filterNew, loadSeen, prune, recordSeen, saveSeen } from "./seen-store.js";
 import { scoreItems } from "./score.js";
@@ -25,10 +25,12 @@ async function main(): Promise<void> {
   const scored = await scoreItems(fresh);
 
   const markdown = renderDigest(scored, date);
-  const path = `digests/${date}.md`;
-  await mkdir("digests", { recursive: true });
-  await writeFile(path, markdown, "utf8");
-  console.log(`[digest] wrote ${path}`);
+  const wrote = await writeDigest(date, markdown, scored.length);
+  console.log(
+    wrote
+      ? `[digest] wrote ${digestPath(date)}`
+      : `[digest] kept existing ${digestPath(date)} (re-run found no new items)`,
+  );
 
   // Persist dedup state *before* email — email must never block committing results.
   recordSeen(fresh, seen, now);

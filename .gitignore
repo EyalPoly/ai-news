@@ -6,6 +6,9 @@ node_modules/
 # Local-only planning docs — kept out of the public repo.
 docs/superpowers/
 
+# Subagent-driven-development scratch workspace (ledgers, briefs, reports).
+.superpowers/
+
 # Editor / tooling state.
 .idea/
 .serena/

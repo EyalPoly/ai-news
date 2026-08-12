@@ -1,4 +1,5 @@
 import { digestPath, writeDigest } from "./digest-store.js";
+import { RELEVANCE_THRESHOLD } from "./config.js";
 import { fetchAll } from "./fetch.js";
 import { filterNew, loadSeen, prune, recordSeen, saveSeen } from "./seen-store.js";
 import { scoreItems } from "./score.js";
@@ -25,7 +26,8 @@ async function main(): Promise<void> {
   const scored = await scoreItems(fresh);
 
   const markdown = renderDigest(scored, date);
-  const wrote = await writeDigest(date, markdown, scored.length);
+  const keptCount = scored.filter((i) => i.relevance >= RELEVANCE_THRESHOLD).length;
+  const wrote = await writeDigest(date, markdown, keptCount);
   console.log(
     wrote
       ? `[digest] wrote ${digestPath(date)}`

@@ -50,3 +50,15 @@ test("writeDigest overwrites an existing digest when there are items", async () 
   assert.equal(wrote, true);
   assert.equal(await readFile(join(dir, "2026-08-03.md"), "utf8"), "# new\n");
 });
+
+test("same-day re-run: renderDigest placeholder (no items passed threshold) doesn't overwrite committed digest", async () => {
+  const dir = await scratch();
+  await mkdir(dir, { recursive: true });
+  await writeFile(join(dir, "2026-08-03.md"), "# AI/Agents Digest — 2026-08-03\n\n- [Good item](https://example.com)\n", "utf8");
+
+  const placeholderMarkdown = "# AI/Agents Digest — 2026-08-03\n\n_No items cleared the relevance threshold this week._\n";
+  const wrote = await writeDigest("2026-08-03", placeholderMarkdown, 0, dir);
+
+  assert.equal(wrote, false, "placeholder must not clobber committed digest even on re-run");
+  assert.equal(await readFile(join(dir, "2026-08-03.md"), "utf8"), "# AI/Agents Digest — 2026-08-03\n\n- [Good item](https://example.com)\n");
+});

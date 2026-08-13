@@ -39,3 +39,25 @@ export interface Score {
 export interface ScoredItem extends FeedItem, Score {
   rank: number;
 }
+
+/** One link listed in an episode's show notes. */
+export interface EpisodeItem {
+  title: string;
+  link: string;
+  source: string;
+}
+
+/** A published episode, as persisted in state/episodes.json and rendered into the feed. */
+export interface Episode {
+  /** YYYY-MM-DD. Doubles as the RSS guid. */
+  date: string;
+  title: string;
+  summary: string;
+  items: EpisodeItem[];
+  /** GitHub release asset URL. */
+  audioUrl: string;
+  /** <enclosure length> — byte size of the MP3. */
+  bytes: number;
+  /** <itunes:duration> — derived exactly from the PCM byte count. */
+  durationSec: number;
+}

@@ -62,3 +62,21 @@ export const CATEGORY_TITLES: Record<Category, string> = {
 
 /** The valid categories, derived from CATEGORY_TITLES so they never drift apart. */
 export const CATEGORIES = Object.keys(CATEGORY_TITLES) as Category[];
+
+/** Public base URL of the GitHub Pages site that serves feed.xml and the cover art. */
+export const SITE_BASE_URL = process.env.SITE_BASE_URL ?? "https://eyalpoly.github.io/ai-news";
+
+export const PODCAST_TITLE = "AI/Agents Weekly";
+export const PODCAST_DESCRIPTION =
+  "A ten-minute weekly rundown of AI and agent news for people who build LLM-powered systems.";
+export const PODCAST_AUTHOR = "Eyal Politansky";
+/**
+ * Published verbatim in a world-readable feed and indexed by every directory
+ * that ingests it, so this is a `+`-tagged alias: same inbox, and it identifies
+ * the leak source later. Fall back to the plain address if a directory rejects `+`.
+ */
+export const PODCAST_OWNER_EMAIL = process.env.PODCAST_OWNER_EMAIL ?? "10eyal10+podcast@gmail.com";
+export const PODCAST_LANGUAGE = "en-us";
+/** Apple's taxonomy is fixed; "Technology" has no subcategories. */
+export const PODCAST_CATEGORY = "Technology";
+export const PODCAST_EXPLICIT = false;

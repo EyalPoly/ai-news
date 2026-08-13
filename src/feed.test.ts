@@ -65,7 +65,7 @@ test("buildFeed escapes titles and cannot break out of CDATA", () => {
     }),
   ]);
   assert.match(xml, /<title>Tom &amp; Jerry &lt;hack&gt;<\/title>/);
-  assert.doesNotMatch(xml, /\]\]>[^<]*<\/description>/);
+  assert.equal((xml.match(/\]\]>/g) ?? []).length, 1);
   assert.match(xml, /href="https:\/\/x\/1\?a=1&amp;b=2"/);
 });
 

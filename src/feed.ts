@@ -51,7 +51,7 @@ function renderItem(ep: Episode): string {
   return [
     "    <item>",
     `      <title>${escapeXml(ep.title)}</title>`,
-    `      <description><![CDATA[${showNotes(ep)}]]><!--></description>`,
+    `      <description><![CDATA[${showNotes(ep)}]]></description>`,
     `      <pubDate>${rfc822(ep.date)}</pubDate>`,
     `      <guid isPermaLink="false">${escapeXml(ep.date)}</guid>`,
     `      <enclosure url="${escapeXml(ep.audioUrl)}" length="${ep.bytes}" type="audio/mpeg"/>`,

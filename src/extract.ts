@@ -17,7 +17,7 @@ export interface ExtractResult {
 
 export function readableText(html: string): string | null {
   const { document } = parseHTML(html);
-  const article = new Readability(document as unknown as Document).parse();
+  const article = new Readability(document as unknown as any).parse();
   const text = (article?.textContent ?? "").replace(/\s+/g, " ").trim();
   return text.length > 0 ? text : null;
 }

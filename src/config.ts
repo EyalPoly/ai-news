@@ -80,3 +80,19 @@ export const PODCAST_LANGUAGE = "en-us";
 /** Apple's taxonomy is fixed; "Technology" has no subcategories. */
 export const PODCAST_CATEGORY = "Technology";
 export const PODCAST_EXPLICIT = false;
+
+/** Items pulled from the digest for extraction. Oversized so failures can be backfilled. */
+export const PODCAST_CANDIDATE_POOL = 20;
+
+/** Items actually discussed in an episode. Bounds episode length independent of news volume. */
+export const PODCAST_TOP_N = 8;
+
+/**
+ * Cap per feed. arXiv publishes ~40 items/week at relevance 7–8 and would
+ * otherwise dominate every episode; without this, a real week filled six of
+ * eight slots from one nine-way rank tie of arXiv abstracts.
+ */
+export const PODCAST_MAX_PER_SOURCE = 3;
+
+/** Below this many extractable items, skip the episode rather than publish a stub. */
+export const PODCAST_MIN_ITEMS = 3;

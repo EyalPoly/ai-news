@@ -61,3 +61,10 @@ export interface Episode {
   /** <itunes:duration> — derived exactly from the PCM byte count. */
   durationSec: number;
 }
+
+/** A scored item plus its extracted article text, or null when extraction failed. */
+export interface ExtractedItem extends ScoredItem {
+  text: string | null;
+  /** Why extraction failed, for logs. Absent on success. */
+  failure?: string;
+}

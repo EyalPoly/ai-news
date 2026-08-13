@@ -96,3 +96,18 @@ export const PODCAST_MAX_PER_SOURCE = 3;
 
 /** Below this many extractable items, skip the episode rather than publish a stub. */
 export const PODCAST_MIN_ITEMS = 3;
+
+/** Per-article fetch budget. `fetch` has no timeout option — this drives AbortSignal.timeout. */
+export const EXTRACT_TIMEOUT_MS = 15000;
+
+/** Cap per item so one long post cannot dominate the script prompt. */
+export const EXTRACT_MAX_CHARS = 6000;
+
+/** A successful fetch is not usable text: readability returns nav cruft from JS-only pages. */
+export const EXTRACT_MIN_CHARS = 400;
+
+/** One pathological page must not hold megabytes of DOM across 20 concurrent fetches. */
+export const EXTRACT_MAX_BYTES = 2_000_000;
+
+/** Node's fetch sends nothing meaningful and a large share of publishers 403 it. */
+export const EXTRACT_USER_AGENT = "ai-news-digest/1.0 (+https://github.com/EyalPoly/ai-news)";

@@ -7,9 +7,10 @@ import {
   pcmDurationSec,
   renderChunk,
   silencePcm,
+  synthesizeEpisode,
   wavFromPcm,
 } from "./tts.js";
-import type { Segment } from "./types.js";
+import type { ParsedScript, Segment } from "./types.js";
 
 function segment(index: number, words: number, speakers = ["Maya", "Daniel"]): Segment {
   const perTurn = Math.ceil(words / speakers.length);
@@ -107,4 +108,29 @@ test("wavFromPcm writes a correct 44-byte header", () => {
   assert.equal(wav.readUInt16LE(34), 16, "bits per sample");
   assert.equal(wav.toString("ascii", 36, 40), "data");
   assert.equal(wav.readUInt32LE(40), pcm.length);
+});
+
+test("synthesizeEpisode calls TTS once per chunk and reports exact duration", async () => {
+  const script: ParsedScript = {
+    title: "t",
+    summary: "s",
+    segments: [1, 2, 3, 4, 5, 6, 7].map((i) => segment(i, 150)),
+  };
+
+  // One second of silence per call; 3 chunks + 2 seams of 500ms = 4s total.
+  const oneSecond = Buffer.alloc(48_000).toString("base64");
+  let calls = 0;
+
+  const result = await synthesizeEpisode(script, async () => {
+    calls++;
+    return new Response(
+      JSON.stringify({ candidates: [{ content: { parts: [{ inlineData: { data: oneSecond } }] } }] }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+  });
+
+  assert.equal(calls, 3);
+  assert.equal(result.chunks, 3);
+  assert.equal(result.durationSec, 4);
+  assert.ok(result.mp3.length > 0);
 });

@@ -1,11 +1,16 @@
 import {
   PCM_BYTES_PER_SECOND,
+  PODCAST_SPEAKERS,
+  PODCAST_TTS_MODEL,
   SPEECH_WPM,
   TTS_CHUNK_TARGET_SECONDS,
   TTS_SEAM_SILENCE_MS,
 } from "./config.js";
+import { generateSpeech } from "./gemini.js";
+import { encodeMp3 } from "./mp3.js";
+import { withRetry } from "./retry.js";
 import { segmentWords } from "./script.js";
-import type { Segment } from "./types.js";
+import type { ParsedScript, Segment } from "./types.js";
 
 const SAMPLE_RATE = 24_000;
 const CHANNELS = 1;
@@ -100,4 +105,46 @@ export function wavFromPcm(pcm: Buffer): Buffer {
   header.writeUInt32LE(pcm.length, 40);
 
   return Buffer.concat([header, pcm]);
+}
+
+export interface SynthesisResult {
+  mp3: Buffer;
+  durationSec: number;
+  chunks: number;
+}
+
+/**
+ * Sequential, not Promise.all: the free tier is a few requests per minute, so
+ * unlike score.ts this paces itself. A weekly job has no reason to hurry.
+ * Concat once, encode once, at the end.
+ */
+export async function synthesizeEpisode(
+  script: ParsedScript,
+  fetchImpl: typeof fetch = fetch,
+): Promise<SynthesisResult> {
+  const chunks = chunkSegments(script.segments);
+  if (chunks.length === 0) throw new Error("nothing to synthesize");
+
+  const pcmChunks: Buffer[] = [];
+  for (const [i, chunk] of chunks.entries()) {
+    const transcript = renderChunk(chunk);
+    console.log(`[tts] chunk ${i + 1}/${chunks.length} — ${chunk.length} segment(s)`);
+    pcmChunks.push(
+      await withRetry(() =>
+        generateSpeech(PODCAST_TTS_MODEL, transcript, PODCAST_SPEAKERS, fetchImpl),
+      ),
+    );
+  }
+
+  const pcm = concatPcm(pcmChunks);
+  const durationSec = pcmDurationSec(pcm);
+  const words = script.segments.reduce((sum, s) => sum + segmentWords(s), 0);
+  // Calibration signal: replace the SPEECH_WPM guess once a few runs have logged this.
+  console.log(
+    `[tts] ${chunks.length} chunk(s), ${durationSec.toFixed(1)}s, measured ${(
+      (words / durationSec) * 60
+    ).toFixed(0)} wpm`,
+  );
+
+  return { mp3: await encodeMp3(pcm), durationSec, chunks: chunks.length };
 }

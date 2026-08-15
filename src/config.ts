@@ -136,3 +136,20 @@ export const PODCAST_SPEAKERS = [
   { name: "Maya", voice: "Kore" },
   { name: "Daniel", voice: "Puck" },
 ] as const;
+
+export const PODCAST_TARGET_MINUTES = 10;
+
+/**
+ * Conversational TTS pace. Does double duty: it converts the episode target
+ * into a word budget for the script prompt, and sizes TTS chunks. Safe because
+ * the chunk target (180s) sits ~2.7x under the per-call cap, so even a 35%
+ * estimation error costs nothing. Replace with a measured value once a few
+ * episodes have logged `words / durationSec * 60`.
+ */
+export const SPEECH_WPM = 150;
+
+export const PODCAST_MIN_WORDS_PER_ITEM = 110;
+export const PODCAST_MAX_WORDS_PER_ITEM = 300;
+
+/** Intro + outro, budgeted explicitly so they don't eat item time. */
+export const PODCAST_INTRO_OUTRO_WORDS = 60;

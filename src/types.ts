@@ -68,3 +68,22 @@ export interface ExtractedItem extends ScoredItem {
   /** Why extraction failed, for logs. Absent on success. */
   failure?: string;
 }
+
+/** One spoken line: which host says it, and what they say. */
+export interface Turn {
+  speaker: string;
+  text: string;
+}
+
+/** All turns for one news item, delimited in the model output by [[ITEM n]]. */
+export interface Segment {
+  /** 1-based, matching the [[ITEM n]] marker. */
+  index: number;
+  turns: Turn[];
+}
+
+export interface ParsedScript {
+  title: string;
+  summary: string;
+  segments: Segment[];
+}

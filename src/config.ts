@@ -153,3 +153,21 @@ export const PODCAST_MAX_WORDS_PER_ITEM = 300;
 
 /** Intro + outro, budgeted explicitly so they don't eat item time. */
 export const PODCAST_INTRO_OUTRO_WORDS = 60;
+
+/**
+ * Gemini TTS returns headerless raw PCM: 24kHz, mono, 16-bit signed LE.
+ * 24000 samples/s x 2 bytes = 48000. Every duration calculation derives from this.
+ */
+export const PCM_BYTES_PER_SECOND = 48_000;
+
+/**
+ * Target per synthesis call. Two limits force chunking: a per-call output-token
+ * cap, and documented quality drift on long generations. Duration is unknowable
+ * before synthesis, so this is compared against a words/SPEECH_WPM estimate.
+ */
+export const TTS_CHUNK_TARGET_SECONDS = 180;
+
+/** Seams now land on topic changes, not mid-conversation handoffs: a beat, not a breath. */
+export const TTS_SEAM_SILENCE_MS = 500;
+
+export const MP3_BITRATE_KBPS = 128;

@@ -111,3 +111,28 @@ export const EXTRACT_MAX_BYTES = 2_000_000;
 
 /** Node's fetch sends nothing meaningful and a large share of publishers 403 it. */
 export const EXTRACT_USER_AGENT = "ai-news-digest/1.0 (+https://github.com/EyalPoly/ai-news)";
+
+/** Gates the entire podcast block, mirroring how sendDigest gates on GMAIL_*. */
+export const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
+
+/** Free-tier text model that writes the dialogue. Confirmed in Spike A. */
+export const PODCAST_SCRIPT_MODEL = process.env.PODCAST_SCRIPT_MODEL ?? "gemini-3.5-flash-lite";
+
+/**
+ * Multi-speaker TTS model. Confirmed in Spike A (2026-08-15): returns real,
+ * non-silent audio on the free tier. `gemini-2.5-flash-preview-tts` and
+ * `gemini-2.5-pro-preview-tts` are available fallbacks if this preview model
+ * is deprecated.
+ */
+export const PODCAST_TTS_MODEL = process.env.PODCAST_TTS_MODEL ?? "gemini-3.1-flash-tts-preview";
+
+/**
+ * The two hosts. This one array is the source of truth for the script prompt,
+ * the parser's recognized speaker prefixes, and multiSpeakerVoiceConfig — whose
+ * `speaker` field must match the transcript label exactly. Voice names confirmed
+ * in Spike A (2026-08-15) via a live multi-speaker generateContent call.
+ */
+export const PODCAST_SPEAKERS = [
+  { name: "Maya", voice: "Kore" },
+  { name: "Daniel", voice: "Puck" },
+] as const;

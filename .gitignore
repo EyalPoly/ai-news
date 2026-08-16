@@ -12,3 +12,6 @@ docs/superpowers/
 # Editor / tooling state.
 .idea/
 .serena/
+
+# Generated Pages output — rebuilt from state/episodes.json every run.
+site/

@@ -1,4 +1,4 @@
-import { GEMINI_API_KEY, PODCAST_MIN_ITEMS } from "./config.js";
+import { PODCAST_MIN_ITEMS } from "./config.js";
 import { DIGEST_DIR, readDigest } from "./digest-store.js";
 import { parseDigest } from "./digest-parse.js";
 import { loadEpisodes, saveEpisodes, upsertEpisode } from "./episode-store.js";
@@ -62,7 +62,7 @@ async function buildEpisode(date: string, dir: string): Promise<Episode | null> 
  * produces a complete episode or none.
  */
 export async function runPodcast(date: string, dir = DIGEST_DIR): Promise<Episode | null> {
-  if (!GEMINI_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     console.log("[podcast] GEMINI_API_KEY unset — skipping");
     return null;
   }

@@ -5,6 +5,8 @@ import { filterNew, loadSeen, prune, recordSeen, saveSeen } from "./seen-store.j
 import { scoreItems } from "./score.js";
 import { renderDigest } from "./render.js";
 import { sendDigest } from "./email.js";
+import { loadEpisodes, writeSite } from "./episode-store.js";
+import { runPodcast } from "./podcast.js";
 
 /** YYYY-MM-DD in UTC, so digest filenames are stable regardless of runner timezone. */
 function isoDate(now: Date): string {
@@ -39,7 +41,18 @@ async function main(): Promise<void> {
   await saveSeen(prune(seen, now));
   console.log("[digest] saved seen-store");
 
-  await sendDigest(`AI/Agents Digest — ${date}`, markdown);
+  const episode = await runPodcast(date);
+
+  // Outside the best-effort block on purpose: site/ must exist on every run or
+  // the Pages upload fails and a healthy digest reports as a red workflow.
+  await writeSite(await loadEpisodes());
+
+  await sendDigest(
+    `AI/Agents Digest — ${date}`,
+    markdown,
+    episode?.audioUrl,
+    episode?.durationSec,
+  );
 }
 
 main().catch((err) => {

@@ -7,7 +7,7 @@ low-maintenance by design: a few small `tsx`-run TypeScript modules, no DB, no s
 
 One-directional pipeline, one module per stage in `src/`:
 
-`sources.ts → fetch.ts → seen-store.ts (dedupe) → score.ts (Claude) → render.ts → digest.ts writes digests/YYYY-MM-DD.md → seen-store saved → email.ts (best-effort) → podcast.ts writes feed.xml + episode MP3 (Gemini; best-effort)`
+`sources.ts → fetch.ts → seen-store.ts (dedupe) → score.ts (Claude) → render.ts → digest.ts writes digests/YYYY-MM-DD.md → seen-store saved → podcast.ts synthesizes episode MP3 (Gemini; best-effort) → episode-store.ts writes site/feed.xml (always) → email.ts (best-effort)`
 
 - `config.ts` — all tunables (lookback window, prune age, relevance threshold, model, batch size, tier priorities, categories).
 - `types.ts` — shared types.

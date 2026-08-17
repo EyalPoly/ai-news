@@ -16,17 +16,55 @@ export interface ExtractResult {
 }
 
 /**
- * Circuit breaker for readableText. Readability's parse cost is super-quadratic
- * in DOM nesting depth, so a page far below EXTRACT_MAX_BYTES can still occupy
- * the event loop for minutes — and parse() is synchronous, so AbortSignal covers
- * the fetch but not this. A hang here would block the digest email and the Pages
- * site for the week, so the ceiling sits well above any real article (a long post
- * is a few thousand elements) and comfortably below where the cost explodes.
+ * Circuit breakers for readableText. parse() is synchronous and unbounded, so
+ * AbortSignal covers the fetch but not this: a hang here blocks the digest email
+ * and the Pages site for the whole week.
+ *
+ * Both dimensions are needed — measured against this code, cost grows ~depth^1.9
+ * and linearly in element count, and the two are independent:
+ *
+ *   1,803 elements nested 1,800 deep (20KB, 1% of EXTRACT_MAX_BYTES)  27s
+ *   18,402 elements, shallow                                          0.4s
+ *   1,992 elements nested 190 deep                                    6.6s
+ *
+ * so a count ceiling alone lets a 20KB page hang the run. These two ceilings cap
+ * the worst admitted document at roughly 3s. A real long article measures ~400
+ * elements nested under 30 deep, and the candidate pool is oversized precisely so
+ * that dropping an odd item costs nothing.
  */
-const MAX_DOM_ELEMENTS = 10_000;
+const MAX_DOM_DEPTH = 100;
+const MAX_DOM_ELEMENTS = 3_000;
+
+interface DomTreeNode {
+  children: ArrayLike<DomTreeNode>;
+}
+
+/** Iterative, and stops at the limit: recursion would blow the stack on exactly
+ *  the documents this exists to reject. */
+function exceedsDepth(root: DomTreeNode | null, limit: number): boolean {
+  const stack: { node: DomTreeNode; depth: number }[] = root ? [{ node: root, depth: 1 }] : [];
+
+  while (stack.length > 0) {
+    const entry = stack.pop();
+    if (entry === undefined) break;
+    if (entry.depth > limit) return true;
+    const { children } = entry.node;
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      if (child) stack.push({ node: child, depth: entry.depth + 1 });
+    }
+  }
+
+  return false;
+}
 
 export function readableText(html: string): string | null {
   const { document } = parseHTML(html);
+
+  if (exceedsDepth(document.documentElement as DomTreeNode | null, MAX_DOM_DEPTH)) {
+    console.warn(`[extract] DOM nested deeper than ${MAX_DOM_DEPTH} — skipping parse`);
+    return null;
+  }
 
   // querySelectorAll, not getElementsByTagName("*"): linkedom returns an empty
   // list for the wildcard tag name, which would silently disable the guard.

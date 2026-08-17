@@ -40,9 +40,24 @@ test("readableText returns null on a document Readability rejects outright", () 
   }
 });
 
+test("readableText bails out on a deeply nested document instead of hanging", () => {
+  // The actual hang shape: 1,803 elements in 21KB — 1% of EXTRACT_MAX_BYTES and
+  // under the element ceiling, so only the depth check can catch it. Measured at
+  // 27s through Readability without the guard; the assertion below is what keeps
+  // a regression here from turning into a wedged weekly run.
+  const html = `<html><body>${"<div>".repeat(1800)}<p>${"prose ".repeat(200)}</p>${"</div>".repeat(1800)}</body></html>`;
+
+  const started = Date.now();
+  const text = readableText(html);
+  const elapsed = Date.now() - started;
+
+  assert.equal(text, null);
+  assert.ok(elapsed < 1000, `expected a fast bail-out, took ${elapsed}ms`);
+});
+
 test("readableText bails out on a document over the DOM-element ceiling", () => {
-  // ~18k elements of real prose: without the ceiling this parses successfully,
-  // so a null return can only come from the circuit breaker firing.
+  // The other axis: shallow, so depth cannot catch it, and ~18k elements of real
+  // prose that Readability parses happily — a null can only be the count ceiling.
   const paragraph = "<p>Real article prose that readability would happily extract if it ran.</p>";
   const block = `<div><section><article>${paragraph.repeat(20)}</article></section></div>`;
   const html = `<html><body>${block.repeat(800)}</body></html>`;
@@ -53,6 +68,17 @@ test("readableText bails out on a document over the DOM-element ceiling", () => 
 
   assert.equal(text, null);
   assert.ok(elapsed < 3000, `expected a fast bail-out, took ${elapsed}ms`);
+});
+
+test("readableText still accepts a long real-world-shaped article", () => {
+  // Guards this strict must not start dropping legitimate items: 400 paragraphs,
+  // 36KB, is a very long technical post and it has to survive both ceilings.
+  const html = `<html><body><article><h1>Title</h1>${
+    "<p>A substantial paragraph of a genuinely long technical article about building agents. </p>".repeat(400)
+  }</article></body></html>`;
+
+  const text = readableText(html);
+  assert.ok(text && text.length > 20_000);
 });
 
 test("extractArticle maps an empty HTML body to unparseable rather than throwing", async () => {
@@ -67,7 +93,11 @@ test("extractArticle returns text on a good HTML response", async () => {
 });
 
 test("extractArticle truncates to EXTRACT_MAX_CHARS", async () => {
-  const huge = `<html><body><article>${"<p>word word word word word.</p>".repeat(5000)}</article></body></html>`;
+  // Long paragraphs rather than many of them: the text has to exceed 6000 chars
+  // while the element count stays inside readableText's ceiling, as a real
+  // article of this length does.
+  const paragraph = `<p>${"word ".repeat(60)}</p>`;
+  const huge = `<html><body><article>${paragraph.repeat(200)}</article></body></html>`;
   const result = await extractArticle("https://x/1", async () => htmlResponse(huge));
   assert.ok(result.text);
   assert.equal(result.text.length, 6000);

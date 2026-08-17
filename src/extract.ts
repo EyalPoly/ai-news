@@ -20,20 +20,22 @@ export interface ExtractResult {
  * AbortSignal covers the fetch but not this: a hang here blocks the digest email
  * and the Pages site for the whole week.
  *
- * Both dimensions are needed — measured against this code, cost grows ~depth^1.9
- * and linearly in element count, and the two are independent:
+ * Depth is the primary defense. Cost grows ~depth^1.9 and only linearly in
+ * element count, and the two are independent, so a count ceiling alone is no
+ * defense at all: measured against this code, 1,803 elements nested 1,800 deep
+ * (21KB — 1% of EXTRACT_MAX_BYTES) takes 53s, while 18,402 shallow elements take
+ * 0.4s. Real pages nest ~25-30 deep, so 100 has ample headroom.
  *
- *   1,803 elements nested 1,800 deep (20KB, 1% of EXTRACT_MAX_BYTES)  27s
- *   18,402 elements, shallow                                          0.4s
- *   1,992 elements nested 190 deep                                    6.6s
- *
- * so a count ceiling alone lets a 20KB page hang the run. These two ceilings cap
- * the worst admitted document at roughly 3s. A real long article measures ~400
- * elements nested under 30 deep, and the candidate pool is oversized precisely so
- * that dropping an odd item costs nothing.
+ * The element ceiling is a secondary bound on what the depth guard still admits:
+ * with depth capped at 100, a 10,002-element document is 12.8s worst case
+ * (3,002 is 3.1s, 6,002 is 7.5s). Bounded, and only reachable adversarially —
+ * real pages measured from this repo's own digests run 3,364 elements (a
+ * HuggingFace post, 188ms) and 8,417 (a long Wikipedia article, 376ms), so
+ * tightening this costs extraction rate, which is what determines episode
+ * quality, to buy protection depth already provides.
  */
 const MAX_DOM_DEPTH = 100;
-const MAX_DOM_ELEMENTS = 3_000;
+const MAX_DOM_ELEMENTS = 10_000;
 
 interface DomTreeNode {
   children: ArrayLike<DomTreeNode>;

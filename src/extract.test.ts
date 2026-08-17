@@ -70,15 +70,21 @@ test("readableText bails out on a document over the DOM-element ceiling", () => 
   assert.ok(elapsed < 3000, `expected a fast bail-out, took ${elapsed}ms`);
 });
 
-test("readableText still accepts a long real-world-shaped article", () => {
-  // Guards this strict must not start dropping legitimate items: 400 paragraphs,
-  // 36KB, is a very long technical post and it has to survive both ceilings.
-  const html = `<html><body><article><h1>Title</h1>${
-    "<p>A substantial paragraph of a genuinely long technical article about building agents. </p>".repeat(400)
-  }</article></body></html>`;
+test("readableText still accepts a large real-world-shaped page", () => {
+  // Sized against pages measured from this repo's own digests, which run to
+  // 3,364 elements (a HuggingFace post) and 8,417 (a long Wikipedia article) at
+  // depth 25-28: ~5,000 elements of prose with inline links and code, wrapped in
+  // the layout divs a real CMS emits. A ceiling tuned on toy fixtures alone would
+  // silently cut extraction rate on exactly this shape.
+  const paragraph =
+    '<p>Prose with an <a href="/x">inline link</a> and some <code>agent_loop()</code> in it. </p>';
+  const wrap = 25;
+  const html = `<html><body>${"<div>".repeat(wrap)}<article><h1>Title</h1>${paragraph.repeat(
+    1200,
+  )}</article>${"</div>".repeat(wrap)}</body></html>`;
 
   const text = readableText(html);
-  assert.ok(text && text.length > 20_000);
+  assert.ok(text && text.length > 20_000, `expected real text, got ${text?.length ?? "null"}`);
 });
 
 test("extractArticle maps an empty HTML body to unparseable rather than throwing", async () => {

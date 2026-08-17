@@ -9,10 +9,23 @@ import { candidatePool, pickEpisodeItems } from "./select.js";
 import { synthesizeEpisode } from "./tts.js";
 import type { Episode } from "./types.js";
 
-async function buildEpisode(date: string, dir: string): Promise<Episode | null> {
+async function buildEpisode(
+  date: string,
+  dir: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<Episode | null> {
   const markdown = await readDigest(date, dir);
   if (markdown === null) {
     console.warn(`[podcast] no digest for ${date} — skipping`);
+    return null;
+  }
+
+  // Before any work: a re-run for an already-published date would re-extract,
+  // re-script and burn the whole free-tier TTS quota only to hit 422 on the
+  // existing episode-<date> release tag.
+  const published = await loadEpisodes();
+  if (published.some((e) => e.date === date)) {
+    console.log(`[podcast] episode for ${date} already published — skipping`);
     return null;
   }
 
@@ -23,7 +36,7 @@ async function buildEpisode(date: string, dir: string): Promise<Episode | null> 
     return null;
   }
 
-  const extracted = await extractAll(pool);
+  const extracted = await extractAll(pool, fetchImpl);
   const picked = pickEpisodeItems(extracted);
   const usable = extracted.filter((i) => i.text !== null).length;
   console.log(`[podcast] extracted ${usable}/${pool.length}, covering ${picked.length}`);
@@ -33,10 +46,10 @@ async function buildEpisode(date: string, dir: string): Promise<Episode | null> 
     return null;
   }
 
-  const script = await generateScript(picked, date);
-  const { mp3, durationSec } = await synthesizeEpisode(script);
+  const script = await generateScript(picked, date, fetchImpl);
+  const { mp3, durationSec } = await synthesizeEpisode(script, fetchImpl);
 
-  const audioUrl = await publishEpisode(date, mp3, script.title);
+  const audioUrl = await publishEpisode(date, mp3, script.title, fetchImpl);
   if (audioUrl === null) {
     console.log("[podcast] not published (no token) — manifest unchanged");
     return null;
@@ -52,7 +65,7 @@ async function buildEpisode(date: string, dir: string): Promise<Episode | null> 
     durationSec,
   };
 
-  await saveEpisodes(upsertEpisode(await loadEpisodes(), episode));
+  await saveEpisodes(upsertEpisode(published, episode));
   return episode;
 }
 
@@ -61,13 +74,17 @@ async function buildEpisode(date: string, dir: string): Promise<Episode | null> 
  * the email are never blocked. Partial episodes are never published — a run
  * produces a complete episode or none.
  */
-export async function runPodcast(date: string, dir = DIGEST_DIR): Promise<Episode | null> {
+export async function runPodcast(
+  date: string,
+  dir = DIGEST_DIR,
+  fetchImpl: typeof fetch = fetch,
+): Promise<Episode | null> {
   if (!process.env.GEMINI_API_KEY) {
     console.log("[podcast] GEMINI_API_KEY unset — skipping");
     return null;
   }
   try {
-    return await buildEpisode(date, dir);
+    return await buildEpisode(date, dir, fetchImpl);
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err);
     console.warn(`[podcast] failed (continuing): ${reason}`);

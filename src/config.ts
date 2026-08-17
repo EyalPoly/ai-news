@@ -112,7 +112,11 @@ export const EXTRACT_MAX_BYTES = 2_000_000;
 /** Node's fetch sends nothing meaningful and a large share of publishers 403 it. */
 export const EXTRACT_USER_AGENT = "ai-news-digest/1.0 (+https://github.com/EyalPoly/ai-news)";
 
-/** Gates the entire podcast block, mirroring how sendDigest gates on GMAIL_*. */
+/**
+ * API key for the Gemini text + TTS calls in gemini.ts. The podcast gate in
+ * runPodcast reads process.env directly rather than this constant, so it also
+ * works when the env is set after module load.
+ */
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
 
 /** Free-tier text model that writes the dialogue. Confirmed in Spike A. */

@@ -43,9 +43,15 @@ async function main(): Promise<void> {
 
   const episode = await runPodcast(date);
 
-  // Outside the best-effort block on purpose: site/ must exist on every run or
-  // the Pages upload fails and a healthy digest reports as a red workflow.
-  await writeSite(await loadEpisodes());
+  // Outside the best-effort podcast block on purpose: site/ must exist on every
+  // run or the Pages upload fails and a healthy digest reports as a red workflow.
+  // Still guarded, because a filesystem failure here must not cost the email.
+  try {
+    await writeSite(await loadEpisodes());
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    console.warn(`[digest] site generation failed (continuing): ${reason}`);
+  }
 
   await sendDigest(
     `AI/Agents Digest — ${date}`,

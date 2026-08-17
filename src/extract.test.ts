@@ -32,6 +32,34 @@ test("readableText strips navigation and keeps article body", () => {
   assert.doesNotMatch(text, /Copyright/);
 });
 
+test("readableText returns null on a document Readability rejects outright", () => {
+  // Readability throws here rather than returning null; if that escaped,
+  // Promise.all in extractAll would lose the whole batch over one bad page.
+  for (const html of ["", "   ", '{"items":[]}']) {
+    assert.equal(readableText(html), null);
+  }
+});
+
+test("readableText bails out on a document over the DOM-element ceiling", () => {
+  // ~18k elements of real prose: without the ceiling this parses successfully,
+  // so a null return can only come from the circuit breaker firing.
+  const paragraph = "<p>Real article prose that readability would happily extract if it ran.</p>";
+  const block = `<div><section><article>${paragraph.repeat(20)}</article></section></div>`;
+  const html = `<html><body>${block.repeat(800)}</body></html>`;
+
+  const started = Date.now();
+  const text = readableText(html);
+  const elapsed = Date.now() - started;
+
+  assert.equal(text, null);
+  assert.ok(elapsed < 3000, `expected a fast bail-out, took ${elapsed}ms`);
+});
+
+test("extractArticle maps an empty HTML body to unparseable rather than throwing", async () => {
+  const result = await extractArticle("https://x/1", async () => htmlResponse(""));
+  assert.deepEqual(result, { text: null, failure: "unparseable" });
+});
+
 test("extractArticle returns text on a good HTML response", async () => {
   const result = await extractArticle("https://x/1", async () => htmlResponse(ARTICLE_HTML));
   assert.equal(result.failure, undefined);
@@ -82,6 +110,24 @@ test("extractArticle rejects an oversized response", async () => {
   const result = await extractArticle("https://x/1", async () => big);
   assert.equal(result.text, null);
   assert.equal(result.failure, "too-large");
+});
+
+test("extractAll turns an unexpected throw into one item's failure, not the batch's", async () => {
+  const exploding = htmlResponse("<html><body><p>x</p></body></html>");
+  Object.defineProperty(exploding, "text", {
+    value: async () => {
+      throw new Error("boom");
+    },
+  });
+
+  const items = [scored({ id: "a", link: "https://good/1" }), scored({ id: "b", link: "https://bad/1" })];
+  const results = await extractAll(items, async (input) =>
+    String(input).includes("good") ? htmlResponse(ARTICLE_HTML) : exploding,
+  );
+
+  assert.ok(results[0]?.text);
+  assert.equal(results[1]?.text, null);
+  assert.equal(results[1]?.failure, "extract-error");
 });
 
 test("extractAll preserves item order and attaches text or failure", async () => {

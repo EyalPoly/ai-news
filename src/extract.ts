@@ -15,11 +15,37 @@ export interface ExtractResult {
   failure?: string;
 }
 
+/**
+ * Circuit breaker for readableText. Readability's parse cost is super-quadratic
+ * in DOM nesting depth, so a page far below EXTRACT_MAX_BYTES can still occupy
+ * the event loop for minutes — and parse() is synchronous, so AbortSignal covers
+ * the fetch but not this. A hang here would block the digest email and the Pages
+ * site for the week, so the ceiling sits well above any real article (a long post
+ * is a few thousand elements) and comfortably below where the cost explodes.
+ */
+const MAX_DOM_ELEMENTS = 10_000;
+
 export function readableText(html: string): string | null {
   const { document } = parseHTML(html);
-  const article = new Readability(document as unknown as any).parse();
-  const text = (article?.textContent ?? "").replace(/\s+/g, " ").trim();
-  return text.length > 0 ? text : null;
+
+  // querySelectorAll, not getElementsByTagName("*"): linkedom returns an empty
+  // list for the wildcard tag name, which would silently disable the guard.
+  const elements = document.querySelectorAll("*").length;
+  if (elements > MAX_DOM_ELEMENTS) {
+    console.warn(`[extract] ${elements} DOM elements exceeds the ${MAX_DOM_ELEMENTS} ceiling`);
+    return null;
+  }
+
+  try {
+    const article = new Readability(document as any).parse();
+    const text = (article?.textContent ?? "").replace(/\s+/g, " ").trim();
+    return text.length > 0 ? text : null;
+  } catch {
+    // Readability throws (not returns null) on a document it cannot use at all:
+    // an empty body, or JSON mislabeled text/html. One bad page must cost one
+    // item — the caller maps null to "unparseable" — never the whole episode.
+    return null;
+  }
 }
 
 export async function extractArticle(
@@ -68,9 +94,17 @@ export async function extractAll(
 ): Promise<ExtractedItem[]> {
   return Promise.all(
     items.map(async (item): Promise<ExtractedItem> => {
-      const { text, failure } = await extractArticle(item.link, fetchImpl);
-      if (failure) console.warn(`[extract] ${failure} — ${item.link} (${item.source})`);
-      return { ...item, text, failure };
+      // Defense in depth: a rejection here would take the whole batch — and so
+      // the episode — down with it, however the throw got past extractArticle.
+      try {
+        const { text, failure } = await extractArticle(item.link, fetchImpl);
+        if (failure) console.warn(`[extract] ${failure} — ${item.link} (${item.source})`);
+        return { ...item, text, failure };
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        console.warn(`[extract] extract-error — ${item.link} (${item.source}): ${reason}`);
+        return { ...item, text: null, failure: "extract-error" };
+      }
     }),
   );
 }

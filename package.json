@@ -15,6 +15,10 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.69.0",
+    "@mediabunny/mp3-encoder": "^1.54.0",
+    "@mozilla/readability": "^0.6.0",
+    "linkedom": "^0.18.13",
+    "mediabunny": "^1.54.0",
     "nodemailer": "^7.0.0",
     "rss-parser": "^3.13.0"
   },

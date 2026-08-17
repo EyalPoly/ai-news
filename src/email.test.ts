@@ -14,3 +14,9 @@ test("markdownToHtml escapes raw HTML in text", () => {
   assert.doesNotMatch(html, /<script>/);
   assert.match(html, /&lt;script&gt;/);
 });
+
+test("markdownToHtml is unchanged by the podcast work", () => {
+  const html = markdownToHtml("# T\n\n- [A](https://x/1)");
+  assert.match(html, /<h1[^>]*>T<\/h1>/);
+  assert.match(html, /href="https:\/\/x\/1"/);
+});

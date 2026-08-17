@@ -39,3 +39,51 @@ export interface Score {
 export interface ScoredItem extends FeedItem, Score {
   rank: number;
 }
+
+/** One link listed in an episode's show notes. */
+export interface EpisodeItem {
+  title: string;
+  link: string;
+  source: string;
+}
+
+/** A published episode, as persisted in state/episodes.json and rendered into the feed. */
+export interface Episode {
+  /** YYYY-MM-DD. Doubles as the RSS guid. */
+  date: string;
+  title: string;
+  summary: string;
+  items: EpisodeItem[];
+  /** GitHub release asset URL. */
+  audioUrl: string;
+  /** <enclosure length> — byte size of the MP3. */
+  bytes: number;
+  /** <itunes:duration> — derived exactly from the PCM byte count. */
+  durationSec: number;
+}
+
+/** A scored item plus its extracted article text, or null when extraction failed. */
+export interface ExtractedItem extends ScoredItem {
+  text: string | null;
+  /** Why extraction failed, for logs. Absent on success. */
+  failure?: string;
+}
+
+/** One spoken line: which host says it, and what they say. */
+export interface Turn {
+  speaker: string;
+  text: string;
+}
+
+/** All turns for one news item, delimited in the model output by [[ITEM n]]. */
+export interface Segment {
+  /** 1-based, matching the [[ITEM n]] marker. */
+  index: number;
+  turns: Turn[];
+}
+
+export interface ParsedScript {
+  title: string;
+  summary: string;
+  segments: Segment[];
+}

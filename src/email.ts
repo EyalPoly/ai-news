@@ -32,8 +32,21 @@ export function markdownToHtml(markdown: string): string {
   return `<div style="max-width:680px;margin:0 auto;color:#111">${body}</div>`;
 }
 
-/** Send the digest via Gmail SMTP. Best-effort: never throws. */
-export async function sendDigest(subject: string, markdown: string): Promise<void> {
+function listenBlock(url: string, durationSec: number): string {
+  const minutes = Math.max(1, Math.round(durationSec / 60));
+  return `<p style="font-family:sans-serif;font-size:15px;margin:0 0 16px"><a href="${url}" style="color:#0b5cad;text-decoration:none">🎧 Listen to this week's episode (${minutes} min)</a></p>`;
+}
+
+/**
+ * Send the digest via Gmail SMTP. Best-effort: never throws. With no episode
+ * URL the output is byte-identical to before, so a podcast failure is invisible.
+ */
+export async function sendDigest(
+  subject: string,
+  markdown: string,
+  episodeUrl?: string,
+  durationSec = 600,
+): Promise<void> {
   const user = process.env.GMAIL_USER;
   const pass = process.env.GMAIL_APP_PASSWORD;
   if (!user || !pass) {
@@ -50,8 +63,10 @@ export async function sendDigest(subject: string, markdown: string): Promise<voi
       from: user,
       to,
       subject,
-      text: markdown,
-      html: markdownToHtml(markdown),
+      text: episodeUrl ? `Listen: ${episodeUrl}\n\n${markdown}` : markdown,
+      html: episodeUrl
+        ? listenBlock(episodeUrl, durationSec) + markdownToHtml(markdown)
+        : markdownToHtml(markdown),
     });
     console.log(`[email] sent digest to ${to}`);
   } catch (err) {

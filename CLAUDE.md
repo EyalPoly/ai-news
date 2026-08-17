@@ -7,7 +7,7 @@ low-maintenance by design: a few small `tsx`-run TypeScript modules, no DB, no s
 
 One-directional pipeline, one module per stage in `src/`:
 
-`sources.ts → fetch.ts → seen-store.ts (dedupe) → score.ts (Claude) → render.ts → digest.ts writes digests/YYYY-MM-DD.md → seen-store saved → email.ts (best-effort)`
+`sources.ts → fetch.ts → seen-store.ts (dedupe) → score.ts (Claude) → render.ts → digest.ts writes digests/YYYY-MM-DD.md → seen-store saved → podcast.ts synthesizes episode MP3 (Gemini; best-effort) → episode-store.ts writes site/feed.xml (always) → email.ts (best-effort)`
 
 - `config.ts` — all tunables (lookback window, prune age, relevance threshold, model, batch size, tier priorities, categories).
 - `types.ts` — shared types.
@@ -34,3 +34,8 @@ One-directional pipeline, one module per stage in `src/`:
 - Change scoring behavior or ranking blend: `src/score.ts`.
 - Change digest layout: `src/render.ts`.
 - Change cadence: `.github/workflows/digest.yml` cron **and** `LOOKBACK_DAYS` in `src/config.ts` (keep them in agreement).
+- Change episode selection or length: `PODCAST_*` in `src/config.ts`.
+- Change the dialogue prompt: `buildScriptPrompt` in `src/script.ts`.
+- Change the feed's channel metadata: `src/feed.ts` + `PODCAST_*` in `src/config.ts`.
+- The podcast block reads the *committed digest*, not the in-memory scored array —
+  that is what makes a failed episode retryable by re-running the workflow.

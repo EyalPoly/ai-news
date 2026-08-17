@@ -47,6 +47,9 @@ Each stage is one module in `src/`. See `docs/superpowers/plans/` for the origin
 | `GMAIL_USER` | No | Gmail address used to send the digest. |
 | `GMAIL_APP_PASSWORD` | No | Gmail **app password** (account must have 2FA enabled). |
 | `DIGEST_TO` | No | Recipient; defaults to `GMAIL_USER`. |
+| `GEMINI_API_KEY` | No | Enables the weekly podcast. Unset means the digest runs exactly as before, with no episode. |
+| `PODCAST_OWNER_EMAIL` | No | Address published in `<itunes:owner>`; Spotify uses it to verify show ownership. Defaults to the `+podcast` alias. |
+| `SITE_BASE_URL` | No | Public base URL of the Pages site serving `feed.xml`. Defaults to `https://eyalpoly.github.io/ai-news`. |
 
 If the Gmail vars are unset, email is skipped and logged — local runs work without them.
 
@@ -131,3 +134,38 @@ then commits new digests and dedup state. Add `ANTHROPIC_API_KEY` (or `SCORING_P
 `LLM_ENDPOINT`, `LLM_API_KEY`, `LLM_MODEL` for the openai-compatible path), `GMAIL_USER`,
 `GMAIL_APP_PASSWORD`, and `DIGEST_TO` as repository secrets. The cron cadence and the
 `LOOKBACK_DAYS` window in `src/config.ts` are kept in agreement (weekly + 8-day window).
+
+## Weekly podcast
+
+Each run turns the same week's digest into a ~10 minute two-host audio episode
+and publishes it to a podcast feed, so it shows up in Spotify like any other
+subscription.
+
+Feed: `https://eyalpoly.github.io/ai-news/feed.xml`
+
+How it works: the podcast block re-reads the *committed* `digests/<date>.md`,
+extracts article text for the top 20 items, keeps the best 8 that actually
+extracted (max 3 per source), has Gemini write a segmented two-host script,
+synthesizes it in 3–4 chunks, concatenates the raw PCM, encodes one MP3, uploads
+it as a GitHub Release asset, and regenerates `feed.xml` from
+`state/episodes.json`.
+
+It is **best-effort**. Any failure logs a warning and produces no episode; the
+digest is still written, committed, and emailed exactly as before. Because the
+block reads the committed digest rather than in-memory state, a failed episode
+can be retried simply by re-running the workflow.
+
+Items whose article text cannot be extracted (paywalls, JS-only pages, 403s) are
+dropped from the episode rather than discussed from the title alone — they would
+otherwise be narrated from nothing. They still appear in the digest email.
+
+### One-time setup
+
+1. Make the repo **public** — release assets and Pages must be reachable without
+   auth. This is a one-way door.
+2. Create a Gemini API key and add it as the `GEMINI_API_KEY` repo secret.
+3. Commit `assets/cover.jpg`: square, **3000×3000** (that is the maximum, not a
+   floor — the accepted range is 1400×1400 to 3000×3000), RGB, JPEG or PNG.
+4. Enable GitHub Pages with **GitHub Actions** as the source.
+5. After the first successful run, submit the feed URL above to Spotify for
+   Creators.

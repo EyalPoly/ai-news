@@ -66,7 +66,7 @@ export const CATEGORIES = Object.keys(CATEGORY_TITLES) as Category[];
 /** Public base URL of the GitHub Pages site that serves feed.xml and the cover art. */
 export const SITE_BASE_URL = process.env.SITE_BASE_URL ?? "https://eyalpoly.github.io/ai-news";
 
-export const PODCAST_TITLE = "AI/Agents Weekly";
+export const PODCAST_TITLE = "Context Window";
 export const PODCAST_DESCRIPTION =
   "A ten-minute weekly rundown of AI and agent news for people who build LLM-powered systems.";
 export const PODCAST_AUTHOR = "Eyal Politansky";

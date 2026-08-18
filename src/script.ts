@@ -5,6 +5,7 @@ import {
   PODCAST_SCRIPT_MODEL,
   PODCAST_SPEAKERS,
   PODCAST_TARGET_MINUTES,
+  PODCAST_TITLE,
   SPEECH_WPM,
 } from "./config.js";
 import { generateText } from "./gemini.js";
@@ -79,7 +80,8 @@ export function buildScriptPrompt(items: ExtractedItem[], date: string): string 
     `- Spend between ${PODCAST_MIN_WORDS_PER_ITEM} and ${PODCAST_MAX_WORDS_PER_ITEM} words`,
     `  per story. Go long where there is real substance to explain; keep thin items`,
     `  to a couple of sentences. Do not pad.`,
-    `- Open by naming the show and the week of ${date}; close with a short signoff.`,
+    `- Open by naming the show ("${PODCAST_TITLE}") and the week of ${date}; close`,
+    `  with a short signoff.`,
     `  Put the intro inside [[ITEM 1]] and the outro inside the last item's segment.`,
     `- Discuss what is actually new and buildable. No hype.`,
     `- If two items cover the same announcement, merge them into one discussion and`,

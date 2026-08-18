@@ -1,8 +1,10 @@
 import { PODCAST_MIN_ITEMS } from "./config.js";
+import { computeChapters } from "./chapters.js";
 import { DIGEST_DIR, readDigest } from "./digest-store.js";
 import { parseDigest } from "./digest-parse.js";
 import { loadEpisodes, saveEpisodes, upsertEpisode } from "./episode-store.js";
 import { extractAll } from "./extract.js";
+import { embedChapters } from "./id3.js";
 import { publishEpisode } from "./publish.js";
 import { generateScript } from "./script.js";
 import { candidatePool, pickEpisodeItems } from "./select.js";
@@ -49,7 +51,10 @@ async function buildEpisode(
   const script = await generateScript(picked, date, fetchImpl);
   const { mp3, durationSec } = await synthesizeEpisode(script, fetchImpl);
 
-  const audioUrl = await publishEpisode(date, mp3, script.title, fetchImpl);
+  const chapters = computeChapters(script, picked, durationSec);
+  const tagged = embedChapters(mp3, chapters);
+
+  const audioUrl = await publishEpisode(date, tagged, script.title, fetchImpl);
   if (audioUrl === null) {
     console.log("[podcast] not published (no token) — manifest unchanged");
     return null;
@@ -61,7 +66,7 @@ async function buildEpisode(
     summary: script.summary,
     items: picked.map((i) => ({ title: i.title, link: i.link, source: i.source })),
     audioUrl,
-    bytes: mp3.length,
+    bytes: tagged.length,
     durationSec,
   };
 

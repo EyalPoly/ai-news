@@ -19,6 +19,7 @@
     "@mozilla/readability": "^0.6.0",
     "linkedom": "^0.18.13",
     "mediabunny": "^1.54.0",
+    "node-id3": "^0.2.9",
     "nodemailer": "^7.0.0",
     "rss-parser": "^3.13.0"
   },

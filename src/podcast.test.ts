@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import NodeID3 from "node-id3";
 import { runPodcast } from "./podcast.js";
 import type { Episode } from "./types.js";
 
@@ -139,6 +140,7 @@ test("runPodcast composes extract → script → synthesis → publish into an E
   await writeFile(join(dir, "2026-08-03.md"), DIGEST, "utf8");
 
   const stages: string[] = [];
+  let uploadedMp3: Buffer | undefined;
   const fetchImpl: typeof fetch = async (input, init) => {
     const url = String(input);
 
@@ -168,6 +170,7 @@ test("runPodcast composes extract → script → synthesis → publish into an E
     }
     if (url.startsWith("https://uploads.github.com")) {
       stages.push("upload");
+      uploadedMp3 = Buffer.from(init?.body as Uint8Array);
       return jsonResponse({ browser_download_url: AUDIO_URL });
     }
 
@@ -225,6 +228,13 @@ test("runPodcast composes extract → script → synthesis → publish into an E
   );
 
   assert.deepEqual(manifest, [episode]);
+
+  const read = NodeID3.read(uploadedMp3 as Buffer);
+  assert.equal(read.chapter?.length, 3, "expected one chapter per published item");
+  assert.deepEqual(
+    read.chapter?.map((c) => c.tags?.title),
+    episode.items.map((i) => i.title),
+  );
 });
 
 test("runPodcast skips an already-published date before doing any work", async () => {

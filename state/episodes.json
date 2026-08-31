@@ -48,5 +48,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-08-24/episode-2026-08-24.mp3",
     "bytes": 9372566,
     "durationSec": 585.64
+  },
+  {
+    "date": "2026-08-31",
+    "title": "Context Window: Custom Inference Chips, Multi-Vector Embeddings, and Agent Harness Realities",
+    "summary": "Maya and Daniel break down the week of August 31, 2026, analyzing OpenAI's Jalapeño chip, Sentence Transformers' multi-vector update, Quantization-Aware Healing, and agent harness failure modes.",
+    "items": [
+      {
+        "title": "Breaking Claude Code Opus 5 Auto Mode",
+        "link": "https://simonwillison.net/2026/Aug/27/breaking-claude-code-opus-5-auto-mode/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Training and Finetuning Multi-Vector Embedding Models with Sentence Transformers",
+        "link": "https://huggingface.co/blog/train-multi-vector-encoder",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "llm-anthropic 0.27",
+        "link": "https://simonwillison.net/2026/Aug/24/llm-anthropic/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Qwen3.8-Flash-Next",
+        "link": "https://simonwillison.net/2026/Aug/26/qwen38-flash-next/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Quantization-Aware Healing: a compressed, 4-bit model that outperforms its full-precision original",
+        "link": "https://huggingface.co/blog/MultiverseComputingCAI/quantization-aware-healing",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Lovable CTO: The Future of SaaS Is Apps That Agents Can Use",
+        "link": "https://www.latent.space/p/lovable-future-of-saas",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Granite 4.2 LLMs: How They're Built",
+        "link": "https://huggingface.co/blog/ibm-granite/granite-4-2",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "[AINews] Hot Chips: OpenAI’s Jalapeño, Cerebras CS-5, Groq 3 LPX, Apple M6",
+        "link": "https://www.latent.space/p/ainews-hot-chips-openais-jalapeno",
+        "source": "Latent Space"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-08-31/episode-2026-08-31.mp3",
+    "bytes": 7848080,
+    "durationSec": 490.36
   }
 ]

@@ -98,5 +98,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-08-31/episode-2026-08-31.mp3",
     "bytes": 7848080,
     "durationSec": 490.36
+  },
+  {
+    "date": "2026-09-07",
+    "title": "Context Window: GPT-6 Astra, Fable 5.1, and Agent Memory",
+    "summary": "Maya and Daniel break down the launch of GPT-6 Astra and Claude Fable 5.1, analyze local fine-tuning for structured outputs, and explore new persistent agent memory tooling.",
+    "items": [
+      {
+        "title": "GPT‑6 Astra",
+        "link": "https://simonwillison.net/2026/Sep/3/gpt6-astra/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Introducing GPT-6 Astra for developers",
+        "link": "https://simonwillison.net/2026/Sep/5/introducing-gpt-6-astra-for-developers/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "[AINews] GPT-6 Astra: OpenAI’s biggest LLM launch of all time",
+        "link": "https://www.latent.space/p/ainews-gpt-6-astra-openais-biggest",
+        "source": "Latent Space"
+      },
+      {
+        "title": "[AINews] Claude Fable/Mythos 5.1: new SOTA model, 75% cache price cut but 70% more output tokens",
+        "link": "https://www.latent.space/p/ainews-claude-fablemythos-51-new",
+        "source": "Latent Space"
+      },
+      {
+        "title": "GPT-6 Astra: an automated AI Engineer you can hire for <$6 an hour",
+        "link": "https://www.latent.space/p/astra",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Using Blender with coding agents on macOS",
+        "link": "https://simonwillison.net/2026/Sep/5/blender-coding-agents-macos/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps",
+        "link": "https://huggingface.co/blog/grpo-with-trl-ifstruct",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Give Your Coding Agents a Memory You Own",
+        "link": "https://huggingface.co/blog/funes",
+        "source": "Hugging Face blog"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-09-07/episode-2026-09-07.mp3",
+    "bytes": 6541340,
+    "durationSec": 408.68
   }
 ]

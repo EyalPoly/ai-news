@@ -148,5 +148,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-09-07/episode-2026-09-07.mp3",
     "bytes": 6541340,
     "durationSec": 408.68
+  },
+  {
+    "date": "2026-09-14",
+    "title": "Context Window: Async GRPO, DeepSeek v4.1-Flash, and Agent Swarm Incidents",
+    "summary": "Breaking down async GRPO without NCCL, DeepSeek's new architecture, tool-use dataset generation, and recent security disclosures.",
+    "items": [
+      {
+        "title": "Async GRPO with LoRA across HF Jobs: a bucket, a proxy, and no NCCL",
+        "link": "https://huggingface.co/blog/asyncgrpo-lora-hfjobs",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "[AINews] DeepSeek v4.1-Flash: 763B-P8B-D16B novel causal Encoder–Decoder architecture with vision marks the Return of the Whale",
+        "link": "https://www.latent.space/p/ainews-deepseek-v41-flash-763b-p8b",
+        "source": "Latent Space"
+      },
+      {
+        "title": "OpenAI agents attacked RubyGems back in May",
+        "link": "https://simonwillison.net/2026/Sep/12/openai-agents-rubygems/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "ToolGrad: Efficient tool-use dataset generation with textual \"gradients\"",
+        "link": "https://research.google/blog/toolgrad-efficient-tool-use-dataset-generation-with-textual-gradients/",
+        "source": "Google Research blog"
+      },
+      {
+        "title": "The Rise of the Forward Deployed Engineer — and How To Do the Job Right",
+        "link": "https://www.latent.space/p/forward-deployed-engineer-best-practices",
+        "source": "Latent Space"
+      },
+      {
+        "title": "[AINews] OpenAI reports Navier-Stokes singularity find in 88 hours using Astra-next, roughly 10,000 agents and 130B tokens (>$40M), a contender for second ever Millennium Prize awarded",
+        "link": "https://www.latent.space/p/ainews-openai-reports-navier-stokes",
+        "source": "Latent Space"
+      },
+      {
+        "title": "IBM releases SOTA Granite Time Series PatchTST-FM-r2 model with commercial-friendly license",
+        "link": "https://huggingface.co/blog/ibm-research/ibm-releases-sota-granite-time-series",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "So you want to use OpenRouter?",
+        "link": "https://simonwillison.net/2026/Sep/11/so-you-want-to-use-openrouter/",
+        "source": "Simon Willison"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-09-14/episode-2026-09-14.mp3",
+    "bytes": 6666660,
+    "durationSec": 416.48
   }
 ]

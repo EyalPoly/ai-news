@@ -198,5 +198,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-09-14/episode-2026-09-14.mp3",
     "bytes": 6666660,
     "durationSec": 416.48
+  },
+  {
+    "date": "2026-09-21",
+    "title": "Context Window: Ising Optimization, Consistency Gaps, and Self-Injections",
+    "summary": "Maya and Daniel break down self-injecting compaction prompts, harness design physics, and RL scaling for coding agents.",
+    "items": [
+      {
+        "title": "Self-generated prompt injections in compaction summaries",
+        "link": "https://simonwillison.net/2026/Sep/17/compaction-summaries/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "An empirical study of harness design for coding agents",
+        "link": "https://arxiv.org/abs/2609.20804",
+        "source": "HN: LLM/agents (≥80pts)"
+      },
+      {
+        "title": "[AINews] Jev: a “System One Model” that only decides/classifies/routes/scores — >100x faster, >200x cheaper than small frontier LLMs",
+        "link": "https://www.latent.space/p/ainews-jev-a-system-one-model-that",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Bypassing inference bottlenecks: Accelerating complex AI search with Retrieve-for-Train",
+        "link": "https://research.google/blog/bypassing-inference-bottlenecks-accelerating-complex-ai-search-with-retrieve-for-train/",
+        "source": "Google Research blog"
+      },
+      {
+        "title": "Your Agent Aced the Task. Will It Do It Again?",
+        "link": "https://huggingface.co/blog/ibm-research/altk-evolve-consistency",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Pruning LLMs Like a Physicist: Block Removal as an Ising Optimization Problem",
+        "link": "https://huggingface.co/blog/MultiverseComputingCAI/pruning-llms-like-a-physicist-block-removal-as-an",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
+        "link": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
+        "source": "Latent Space"
+      },
+      {
+        "title": "CodeMidas: Scaling Agentic Coding RL Environments from Code Itself",
+        "link": "https://arxiv.org/abs/2609.22068v1",
+        "source": "arXiv cs.AI agents"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-09-21/episode-2026-09-21.mp3",
+    "bytes": 7183006,
+    "durationSec": 448.76
   }
 ]

@@ -248,5 +248,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-09-21/episode-2026-09-21.mp3",
     "bytes": 7183006,
     "durationSec": 448.76
+  },
+  {
+    "date": "2026-10-05",
+    "title": "Context Window: DevDay 2026, Sonnet 5.5, and Stateful Agent Evals",
+    "summary": "Maya and Daniel break down OpenAI DevDay 2026, Anthropic's Claude Sonnet 5.5, and new benchmarks like ThinkingBox and ProvenanceGuard that expose the gaps between agent tool calls and backend database state.",
+    "items": [
+      {
+        "title": "Claude Sonnet 5.5",
+        "link": "https://simonwillison.net/2026/Sep/28/claude-sonnet-5-5/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
+        "link": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
+        "source": "Latent Space"
+      },
+      {
+        "title": "OpenAI DevDay 2026 live blog",
+        "link": "https://simonwillison.net/2026/Sep/29/openai-devday-2026-live-blog/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "AutoSynthData: Generating Training Data for Enterprise Agents",
+        "link": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "The Agent Said It Was Done. The Database Disagreed.",
+        "link": "https://huggingface.co/blog/microsoft/thinkingbox",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
+        "link": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Why Dwarkesh is Wrong about Computer Use + How OpenAI shipped its Jev competitor in 1 Week",
+        "link": "https://www.latent.space/p/devday-2026",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Getting the Source Right, Not Just the Fact: Source-Aware Verification for MCP Agents",
+        "link": "https://huggingface.co/blog/MultiverseComputingCAI/getting-the-source-right-not-just-the-fact-source",
+        "source": "Hugging Face blog"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-10-05/episode-2026-10-05.mp3",
+    "bytes": 8374710,
+    "durationSec": 523.26
   }
 ]

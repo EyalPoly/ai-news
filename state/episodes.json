@@ -298,5 +298,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-10-05/episode-2026-10-05.mp3",
     "bytes": 8374710,
     "durationSec": 523.26
+  },
+  {
+    "date": "2026-10-12",
+    "title": "Context Window: Mistral Large 4, Haiku 5.5, Dynamic Workflows, and GPU Scheduling",
+    "summary": "We break down the release of Mistral Large 4 and Claude Haiku 5.5, Anthropic's new dynamic multi-agent workflows, and practical cluster budgeting.",
+    "items": [
+      {
+        "title": "Mistral Large 4",
+        "link": "https://simonwillison.net/2026/Oct/6/hn-49982139/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Claude Haiku 5.5",
+        "link": "https://simonwillison.net/2026/Oct/7/claude-haiku-5-5/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Introducing Mistral Large 4: Le chonk",
+        "link": "https://simonwillison.net/2026/Oct/6/le-chonk/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "How Anthropic’s Dynamic Workflows Coordinate Claude Agents",
+        "link": "https://www.latent.space/p/claude-dynamic-workflows",
+        "source": "Latent Space"
+      },
+      {
+        "title": "[AINews] Claude Haiku 5.5 — better than GPT-6 Luna at the same pricing",
+        "link": "https://www.latent.space/p/ainews-claude-haiku-55-better-than",
+        "source": "Latent Space"
+      },
+      {
+        "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
+        "link": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Impactful scheduling for GPU clusters",
+        "link": "https://huggingface.co/blog/allenai/impactful-scheduling",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "One Model Family, Two Gold-Level Results: Fine-Tuning Nemotron for IOI and IMO",
+        "link": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026",
+        "source": "Hugging Face blog"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-10-12/episode-2026-10-12.mp3",
+    "bytes": 5770047,
+    "durationSec": 360.52
   }
 ]

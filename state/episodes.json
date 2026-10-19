@@ -348,5 +348,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-10-12/episode-2026-10-12.mp3",
     "bytes": 5770047,
     "durationSec": 360.52
+  },
+  {
+    "date": "2026-10-19",
+    "title": "Context Window: Dynamic Agent Flows, Source Control at Scale, and Clean Weights",
+    "summary": "Maya and Daniel break down Anthropic's new dynamic multi-agent workflows, their custom Scion source control system handling 30,000 daily commits, Meta's massive Muse Spark Open release, Goodfire's interpretability breakthrough, and local reasoning models.",
+    "items": [
+      {
+        "title": "How Anthropic’s Dynamic Workflows Coordinate Claude Agents (Updated with video!)",
+        "link": "https://www.latent.space/p/claude-dynamic-workflows",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Redesigning source control at Anthropic",
+        "link": "https://simonwillison.net/2026/Oct/13/redesigning-source-control-at-anthropic/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "[AINews] Agents disprove Polysemanticity; greatly improve Interpretability & Alignment",
+        "link": "https://www.latent.space/p/ainews-agents-disprove-polysemanticity",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Lab-in-the-Loop at Compute Speed — Ian Quigley, Leash Bio",
+        "link": "https://www.latent.space/p/lab-in-the-loop-at-compute-speed",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Scaling Indic Pretraining: 2.8 Trillion Tokens and an Open Data Generation Pipeline",
+        "link": "https://huggingface.co/blog/nvidia/scaling-indic-pretraining",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Run fast, private agents on-device with LFM2.5-24B-A2B",
+        "link": "https://huggingface.co/blog/LiquidAI/lfm25-24b-a2b",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Profiling web-edit with Python 3.15: flame graphs and source heatmaps",
+        "link": "https://simonwillison.net/2026/Oct/12/python-3-15-web-edit-profiling/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Welcome Muse Spark Open: open-weight frontier multimodal mixture-of-experts model from Meta",
+        "link": "https://huggingface.co/blog/meta-muse-spark-open",
+        "source": "Hugging Face blog"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-10-19/episode-2026-10-19.mp3",
+    "bytes": 6941352,
+    "durationSec": 433.68
   }
 ]

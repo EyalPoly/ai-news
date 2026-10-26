@@ -398,5 +398,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-10-19/episode-2026-10-19.mp3",
     "bytes": 6941352,
     "durationSec": 433.68
+  },
+  {
+    "date": "2026-10-26",
+    "title": "Context Window: DeepInfer Economics, Kimi 3.1 Pro, and Claude Mods",
+    "summary": "Maya and Daniel break down DeepSeek's open-source DeepInfer stack, Moonshot's Kimi 3.1 Pro launch, Claude Code attention interfaces, and actionable RL and tokenizer optimizations.",
+    "items": [
+      {
+        "title": "[AINews] DeepSeek DeepInfer: Open Source SOTA Inference running 155T toks/day/cluster making $22m/day at ~80% margin for a 81 day payback",
+        "link": "https://latent.space/p/ainews-deepseek-deepinfer-open-source/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "[AINews] Kimi 3.1 Pro 104BA-2.8T: Fable-5.1-Class Open Weights narrows Closed-AI lead to 1 month... and Pro Highspeed API with 2-3× speed",
+        "link": "https://latent.space/p/ainews-kimi-31/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Claude Mods: Flipping the Harness Inside Out",
+        "link": "https://latent.space/p/claude-mods/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Turning Database Grading into RL Rewards: Post-Training Agents with ThinkingBox",
+        "link": "https://huggingface.co/blog/microsoft/thinkingbox-training",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Introducing Kimi K3.1 Pro",
+        "link": "https://simonwillison.net/2026/Oct/23/kimi-k31-pro/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "How Specializing the Vocabulary of SLMs Can Cut Inference Cost by 77% in Real Applications",
+        "link": "https://huggingface.co/blog/Dharma-AI/vocabx-vocabulary-specialization",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Donating Agent Skills to the Agentic AI Foundation",
+        "link": "https://simonwillison.net/2026/Oct/22/donating-agent-skills/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "LitPivot: Developing research ideas through dynamic contextualization within the literature landscape",
+        "link": "https://huggingface.co/blog/allenai/litpivot",
+        "source": "Hugging Face blog"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-10-26/episode-2026-10-26.mp3",
+    "bytes": 7377016,
+    "durationSec": 460.88
   }
 ]

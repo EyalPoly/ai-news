@@ -448,5 +448,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-10-26/episode-2026-10-26.mp3",
     "bytes": 7377016,
     "durationSec": 460.88
+  },
+  {
+    "date": "2026-11-02",
+    "title": "Context Window: Brain and Hands, Sleep Frameworks, and Modular Adapters",
+    "summary": "We break down Anthropic's brain-and-hands architecture for agents, Google's sleep framework for continual learning, and modular model updates.",
+    "items": [
+      {
+        "title": "How Anthropic ships the #1 LLM in the World safely: Separating the Brain from the Hands",
+        "link": "https://latent.space/p/how_anthropic_ships_the_1_llm_in_the_world_safely_separating_the_brain_from_the_hands/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "How Anthropic ships Claude with Claude: Separating the Brain from the Hands",
+        "link": "https://latent.space/p/opus55/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "The sleep framework: A new way for LLMs to retain knowledge in continual learning",
+        "link": "https://research.google/blog/the-sleep-framework-a-new-way-for-llms-to-retain-knowledge-in-continual-learning/",
+        "source": "Google Research blog"
+      },
+      {
+        "title": "GPT-6.1 Terra",
+        "link": "https://simonwillison.net/2026/Oct/26/gpt-61-terra/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Agents Prompt People: Using Agents for Long-Horizon Financial Work",
+        "link": "https://latent.space/p/arca/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Build specialized multimodal models with LFM3",
+        "link": "https://huggingface.co/blog/LiquidAI/lfm3",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "webframe: evaluated as a scraper and a sandbox",
+        "link": "https://simonwillison.net/2026/Oct/26/webframe-evaluation/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Granite Switch 4.1.1 — Update models like you update software",
+        "link": "https://huggingface.co/blog/ibm-granite/granite-switch-4-1-1",
+        "source": "Hugging Face blog"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-11-02/episode-2026-11-02.mp3",
+    "bytes": 7766995,
+    "durationSec": 485.3
   }
 ]

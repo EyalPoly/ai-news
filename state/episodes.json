@@ -498,5 +498,55 @@
     "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-11-02/episode-2026-11-02.mp3",
     "bytes": 7766995,
     "durationSec": 485.3
+  },
+  {
+    "date": "2026-11-16",
+    "title": "Context Window: llama.cpp 1.0, Meta Muse Ember, and Decision Models",
+    "summary": "Maya and Daniel break down the week of November 16, 2026, covering llama.cpp 1.0, Resend’s agent design, Black Forest Labs' FLUX 3, system one decision APIs, BotPsy, and multi-vector pooling.",
+    "items": [
+      {
+        "title": "llama.cpp v1.0.0 : A stronger foundation for the local AI ecosystem",
+        "link": "https://huggingface.co/blog/ggml-org/llama-cpp-v1",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Designing for Agents — Zeno Rocha, Resend",
+        "link": "https://latent.space/p/resend/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "Building Visual Intelligence — Andreas Blattmann & Dustin Podell, Black Forest Labs",
+        "link": "https://latent.space/p/bfl/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "The Jev Revolution: What Engineers Are Already Building with System One Models",
+        "link": "https://latent.space/p/jev-revolution/",
+        "source": "Latent Space"
+      },
+      {
+        "title": "BotPsy: On-Device Personal Assistant with a Sub-Billion-Parameter Agentic Language Model",
+        "link": "https://huggingface.co/blog/qvac/botpsy",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Token Pooling-Aware Training for Multi-Vector Embedding Models",
+        "link": "https://huggingface.co/blog/token-pooling",
+        "source": "Hugging Face blog"
+      },
+      {
+        "title": "Introducing Our Smallest, Most Efficient Model: Muse Ember",
+        "link": "https://simonwillison.net/2026/Nov/10/muse-ember/",
+        "source": "Simon Willison"
+      },
+      {
+        "title": "Gemini Decisions API",
+        "link": "https://simonwillison.net/2026/Nov/11/gemini-decisions-api/",
+        "source": "Simon Willison"
+      }
+    ],
+    "audioUrl": "https://github.com/EyalPoly/ai-news/releases/download/episode-2026-11-16/episode-2026-11-16.mp3",
+    "bytes": 7940841,
+    "durationSec": 496.14
   }
 ]
